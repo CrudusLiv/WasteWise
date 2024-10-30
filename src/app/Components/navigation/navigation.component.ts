@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationComponent } from '../notification/notification.component';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navigation',

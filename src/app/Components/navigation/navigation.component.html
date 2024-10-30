@@ -1,8 +1,12 @@
-<div class="hamburger" (click)="toggleMenu()" [class.hidden]="isMenuOpen">
-    <i class="fas fa-bars"></i>
-  </div>
-  
-  <div class="sidenav-container" [class.open]="isMenuOpen">
+<mat-toolbar color="primary">
+  <button mat-icon-button (click)="toggleMenu()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>WasteWise</span>
+</mat-toolbar>
+
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="side" [opened]="isMenuOpen">
     <nav class="sidenav">
       <ul class="nav-list">
         <li class="nav-item">
@@ -27,15 +31,18 @@
           <a routerLink="/profile"><i class="fas fa-user"></i> Profile</a>
         </li>
         <li class="nav-item">
-          <a routerLink="/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+          <a routerLink="/access"><i class="fas fa-sign-in-alt"></i> Login</a>
         </li>
         <li class="nav-item">
           <a routerLink="/contact"><i class="fas fa-envelope"></i> Contact</a>
         </li>
       </ul>
     </nav>
-  </div>
+  </mat-sidenav>
   
-  <div class="content">
-    <router-outlet></router-outlet>
-  </div>
+  <mat-sidenav-content>
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

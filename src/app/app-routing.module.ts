@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'access', component: AccessComponent },
   { path: 'admin', component: AdminComponent },
-  { path: ' contact', component: ContactComponent },
+  { path: 'contact', component: ContactComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'disposal', component: DisposalComponent },
   { path: 'navigation', component: NavigationComponent },
