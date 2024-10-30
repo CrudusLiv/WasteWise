@@ -1,0 +1,59 @@
+<div class="page-container">
+    <div class="report-header">
+      <mat-card-title>
+        <mat-icon>assessment</mat-icon>
+        <h1>Analytics & Reports</h1>
+      </mat-card-title>
+      <mat-card-subtitle>
+        Comprehensive waste management analytics and reporting dashboard
+      </mat-card-subtitle>
+    </div>
+  
+    <mat-form-field appearance="outline" class="report-select">
+      <mat-label>Select Report Type</mat-label>
+      <mat-select>
+        <mat-option value="daily">Daily Report</mat-option>
+        <mat-option value="weekly">Weekly Report</mat-option>
+        <mat-option value="monthly">Monthly Report</mat-option>
+        <mat-option value="custom">Custom Range</mat-option>
+      </mat-select>
+    </mat-form-field>
+  
+    <div class="report-grid">
+      <mat-card class="report-card">
+        <mat-card-header>
+          <mat-icon matSuffix>bar_chart</mat-icon>
+          <mat-card-title>Waste Distribution</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+           <!-- Add waste distribution visualization -->
+          </div>
+        </mat-card-content>
+      </mat-card>
+  
+      <mat-card class="report-card">
+        <mat-card-header>
+          <mat-icon matSuffix>trending_up</mat-icon> 
+          <mat-card-title>Recycling Performance</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <!-- Add performance metrics visualization -->
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  
+    <div class="action-buttons">
+      <button mat-raised-button color="primary">
+        <mat-icon >download</mat-icon>
+        Export Report
+      </button>
+      <button mat-raised-button color="accent">
+        <mat-icon>share</mat-icon>
+        Share Insights
+      </button>
+    </div>
+  </div>
+  

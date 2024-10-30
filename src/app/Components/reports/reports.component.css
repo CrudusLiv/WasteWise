@@ -1,0 +1,119 @@
+.page-container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 0 auto;
+    padding: 30px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(199, 232, 202, 0.8));
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+  
+  .report-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 20px 25px;
+    width: 100%;
+  }
+  
+  .report-header h1 {
+    font-size: clamp(24px, 3vw, 28px);
+    color: #2E7D32;
+    margin-bottom: 10px;
+  }
+  
+  mat-card-subtitle {
+    color: #2E7D32;
+    margin-bottom: 10px;
+  }
+  
+  .report-select {
+    width: 100%;
+    margin: 20px 0;
+    color: #000000;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: border-color 0.3s ease;
+  }
+  
+  .report-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 20px 0 30px 0;
+    width: 100%;
+    border-radius: 15px;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .report-card {
+    background: white;
+    border-radius: 16px;
+    height: 350px;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+  
+  .report-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 28px rgba(46, 125, 50, 0.15);
+  }
+  
+  .chart-container {
+    height: 80%;
+    padding: 15px;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+  }
+  
+  button[mat-raised-button] {
+    background-color: #ffffff;
+    color: #296d2d;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    display: block;
+  }
+  
+  button[mat-raised-button]:hover
+  {
+    mat-icon{
+      color: #ffffff;
+    }
+    background-color: #64ce67bc;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  mat-card-title {
+    font-size: clamp(18px, 2vw, 22px);
+    color: #2E7D32;
+    font-weight: 600;
+  }
+  
+  mat-icon {
+    color: #4CAF50;
+    font-size: clamp(15px, 2.5vw, 20px);
+    margin-right: 10px;
+  }
+  
