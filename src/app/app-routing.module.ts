@@ -20,7 +20,7 @@ const routes: Routes = [
   { path: ' contact', component: ContactComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'disposal', component: DisposalComponent },
-  { path: 'naviggation', component: NavigationComponent },
+  { path: 'navigation', component: NavigationComponent },
   { path: 'notification', component: NotificationComponent },
   { path: 'pickup-history', component: PickupHistoryComponent },
   { path: 'profile', component: ProfileComponent },
