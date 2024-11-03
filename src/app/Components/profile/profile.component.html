@@ -1,34 +1,58 @@
 <div class="profile-container">
+  <mat-card>
     <div class="profile-header">
-      <div class="profile-avatar">
-        <img src="../../../assets/images/user_profile.png" alt="User Avatar">
+      <div class="profile-avatar" role="img" aria-label="User profile avatar">
+        <mat-icon class="avatar-icon" aria-hidden="true">account_circle</mat-icon>
       </div>
-      <div class="notifications-icon">
-        <i class="fas fa-bell" (click)="openNotificationsDialog()"></i>
-        <span class="notification-count" *ngIf="notifications.length">{{ notifications.length }}</span>
-      </div>
-      
+      <button mat-icon-button 
+              class="notifications-button" 
+              (click)="openNotificationsDialog()"
+              [attr.aria-label]="'You have ' + notifications.length + ' notifications'">
+        <mat-icon [matBadge]="notifications.length" 
+                 matBadgeColor="warn" 
+                 [matBadgeHidden]="notifications.length === 0"
+                 aria-hidden="false">
+          notifications
+        </mat-icon>
+      </button>
     </div>
-  
-    <div class="profile-details">
-      <h1 class="user-name">{{user?.fullName || 'John'}}</h1>
-      <p class="community-name">{{user?.communityName || 'Subang Jaya'}}</p>
-      
-      <div class="detail-item">
-        <i class="fas fa-envelope"></i>
-        <span>{{user?.email || 'john123@gmail.com'}}</span>
+
+    <mat-card-content>
+      <div class="profile-details">
+        <h1 class="user-name">{{user.fullName}}</h1>
+        <p class="community-name" role="text">{{user.communityName}}</p>
+
+        <mat-list role="list">
+          <mat-list-item role="listitem">
+            <mat-icon matListItemIcon aria-hidden="true">email</mat-icon>
+            <span matListItemTitle>{{user.email}}</span>
+            <span class="visually-hidden">Email address:</span>
+          </mat-list-item>
+
+          <mat-list-item role="listitem">
+            <mat-icon matListItemIcon aria-hidden="true">phone</mat-icon>
+            <span matListItemTitle>{{user.contactNumber}}</span>
+            <span class="visually-hidden">Phone number:</span>
+          </mat-list-item>
+
+          <mat-list-item role="listitem">
+            <mat-icon matListItemIcon aria-hidden="true">home</mat-icon>
+            <span matListItemTitle>{{user.residentialAddress}}</span>
+            <span class="visually-hidden">Residential address:</span>
+          </mat-list-item>
+        </mat-list>
       </div>
-      <div class="detail-item">
-        <i class="fas fa-phone"></i>
-        <span>{{user?.contactNumber||'012-34567890'}}</span>
-      </div>
-      <div class="detail-item">
-        <i class="fas fa-home"></i>
-        <span>{{user?.residentialAddress||'Bandar Sunway, Subang Jaya, Selangor, 47500'}}</span>
-      </div>
-  
-    <div class="profile-actions">
-      <button class="edit-profile-btn">Edit Profile</button>
-    </div>
-  </div>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-raised-button 
+              color="primary" 
+              (click)="onEditProfile()"
+              aria-label="Edit profile">
+        <mat-icon aria-hidden="true">edit</mat-icon>
+        Edit Profile
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
   

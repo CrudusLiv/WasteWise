@@ -1,24 +1,43 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-access',
   templateUrl: './access.component.html',
   styleUrl: './access.component.css'
 })
-export class AccessComponent {
-  loginForm: any = {};
-  signupForm: any = {};
-  email: string = '';
-  password: string = '';
+export class AccessComponent implements OnInit {
+  loginForm: FormGroup;
+  signupForm: FormGroup;
   hidePassword: boolean = true;
-  selectedTab: string = 'signup';
+  selectedTab: number = 0;
+
+  constructor(private fb: FormBuilder) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+
+    this.signupForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      terms: [false, Validators.requiredTrue]
+    });
+  }
+
+  ngOnInit(): void {}
 
   onSubmit() {
-    console.log(this.loginForm);
+    if (this.loginForm.valid) {
+      console.log(this.loginForm.value);
+    }
   }
 
   onSignup() {
-    console.log(this.signupForm);
+    if (this.signupForm.valid) {
+      console.log(this.signupForm.value);
+    }
   }
 
   getErrorMessage(controlName: string, formType: 'login' | 'signup'): string {
@@ -33,6 +52,5 @@ export class AccessComponent {
       return 'Password must be at least 6 characters long';
     }
     return '';
-
   }
 }
