@@ -9,6 +9,7 @@ import { NotificationComponent } from '../notification/notification.component';
 })
 export class NavigationComponent {
   isMenuOpen = false;
+  appTitle = 'WasteWise';
 
   constructor(private dialog: MatDialog) {}
 
@@ -36,6 +37,6 @@ export class NavigationComponent {
   }
 
   private handleNotificationAction(action: any) {
-    // Handle notification actions
+    console.log('Notification action:', action);
   }
 }

@@ -1,0 +1,122 @@
+.contact-container {
+  max-width: 1200px;
+  width: 90%;
+  margin: 0 auto;
+  background: white;
+  border-radius: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+
+}
+
+
+.contact-header {
+  text-align: center;
+  padding: 50px 30px;
+  background: linear-gradient(135deg, #43A047 0%, #1B5E20 100%);
+  color: white;
+}
+
+.header-icon {
+  background: rgba(255, 255, 255, 0.2);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.contact-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.form-section {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 40px;
+  padding: 50px;
+}
+
+.form-container {
+  padding: 30px;
+  background: #f8f9fa;
+  border-radius: 20px;
+}
+
+.form-field {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+  background: white;
+  border-radius: 12px !important;
+  padding: 15px !important;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(45deg, #43A047, #1B5E20);
+  color: white;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: transform 0.3s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-card {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: transform 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.detail-card:hover {
+  transform: translateX(10px);
+}
+
+.detail-card mat-icon {
+  color: #43A047;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.detail-text h3 {
+  color: #43A047;
+  margin-bottom: 5px;
+  font-size: 1.2rem;
+}
+
+.detail-text p {
+  color: #666;
+  margin: 0;
+}
+

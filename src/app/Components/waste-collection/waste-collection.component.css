@@ -1,0 +1,132 @@
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    min-height: calc(100vh - 64px);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  }
+  
+  .collection-card {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(76, 175, 80, 0.15);
+    transform: translateY(0);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+  }
+  
+  .collection-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(76, 175, 80, 0.25);
+  }
+  
+  mat-card-header {
+    background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+    padding: 40px 30px;
+    text-align: center;
+    color: white;
+    align-items: center;
+    justify-content: center;
+
+  }
+  
+  .header-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    margin-bottom: 10px;
+    animation: bounce 2s ease-in-out infinite;
+  }
+  
+  mat-card-title h1 {
+    font-size: 28px;
+    margin: 10px 0;
+    font-weight: 500;
+  }
+  
+  mat-card-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+  }
+  
+  .schedule-form {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  mat-form-field {
+    width: 100%;
+  }
+  
+  .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
+    background: white;
+  }
+  
+  mat-select mat-icon {
+    margin-right: 8px;
+    color: #4CAF50;
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  button[mat-raised-button] {
+    height: 45px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 0 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    display: block;
+    transition-duration: 0.4s;
+  }
+  
+  button[mat-raised-button]:not(:disabled):hover {
+    background-color: #266a2a;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  button[mat-raised-button]:active {
+    background-color: #266a2a;
+  }
+  button[mat-raised-button] mat-icon {
+    margin-right: 8px;
+  }
+  
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 20px 16px;
+    }
+  
+    .schedule-form {
+      padding: 24px;
+    }
+  
+    mat-card-header {
+      padding: 30px 20px;
+    }
+  
+    mat-card-title h1 {
+      font-size: 24px;
+    }
+  }
+  

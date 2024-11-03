@@ -1,0 +1,116 @@
+.profile-container {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-header {
+    position: relative;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .profile-avatar {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #28a745;
+    box-shadow: 0 0 15px #28a745;
+  }
+  
+  .profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .profile-details {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .user-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 5px;
+  }
+  
+  .community-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #28a745;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+  
+  .detail-item {
+    display: flex;
+    align-items: left;
+    justify-content: left;
+    margin-bottom: 15px;
+    margin-left: 10px;
+  }
+  
+  .detail-item i {
+    font-size: 1.2em;
+    color: #28a745;
+    margin-right: 15px;
+    width: 20px;
+  }
+  
+  .detail-item span {
+    font-size: 1.1rem;
+    color: #34495e;
+  }
+  
+  .profile-actions {
+    text-align: center;
+  }
+  
+  .edit-profile-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .edit-profile-btn:hover {
+    background-color: #28a745;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px #28a745;
+  }
+  
+  .notifications-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #28a745;
+  }
+  
+  .notifications-icon .notification-count {
+    background-color: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+  }
+  

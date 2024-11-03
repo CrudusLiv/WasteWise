@@ -1,1 +1,67 @@
-<p>waste-collection works!</p>
+<div class="page-container">
+    <mat-card class="collection-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="header-icon">local_shipping</mat-icon>
+          <h1>Waste Collection Scheduling</h1>
+        </mat-card-title>
+        <mat-card-subtitle>Schedule your waste collection service efficiently</mat-card-subtitle>
+      </mat-card-header>
+  
+      <mat-card-content>
+        <form [formGroup]="collectionForm" (ngSubmit)="onSubmit()" class="schedule-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Collection Area</mat-label>
+            <mat-select formControlName="area">
+              <mat-option *ngFor="let area of areas" [value]="area.id">
+                <mat-icon>location_on</mat-icon>
+                {{area.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="collectionForm.get('area')?.hasError('required')">
+              Please select an area
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline">
+            <mat-label>Collection Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="date">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-hint>Select a preferred collection date</mat-hint>
+            <mat-error *ngIf="collectionForm.get('date')?.hasError('required')">
+              Please select a date
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>Waste Type</mat-label>
+            <mat-select formControlName="wasteType">
+              <mat-option *ngFor="let type of wasteTypes" [value]="type.id">
+                <mat-icon>{{type.icon}}</mat-icon>
+                {{type.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="collectionForm.get('wasteType')?.hasError('required')">
+              Please select a waste type
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline">
+            <mat-label>Additional Notes</mat-label>
+            <textarea matInput formControlName="notes" rows="3" 
+                      placeholder="Add any special instructions or requirements"></textarea>
+          </mat-form-field>
+  
+          <div class="button-container">
+            <button mat-raised-button color="s" type="submit" 
+                    [disabled]="!collectionForm.valid">
+              <mat-icon>schedule</mat-icon>
+              Schedule Collection
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  

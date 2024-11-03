@@ -1,45 +1,65 @@
-<mat-toolbar color="primary">
-  <button mat-icon-button (click)="toggleMenu()">
+<mat-toolbar color="primary" class="toolbar">
+  <button mat-icon-button class="menu-button" (click)="toggleMenu()">
     <mat-icon>menu</mat-icon>
   </button>
-  <span>WasteWise</span>
+  <span class="app-title">{{appTitle}}</span>
+  <span class="toolbar-spacer"></span>
+  <button mat-icon-button class="notification-button" (click)="openNotifications()">
+    <mat-icon>notifications</mat-icon>
+  </button>
 </mat-toolbar>
 
-<mat-sidenav-container>
-  <mat-sidenav #sidenav mode="side" [opened]="isMenuOpen">
-    <nav class="sidenav">
-      <ul class="nav-list">
-        <li class="nav-item">
-          <a routerLink="/dashboard"><i class="fas fa-dashboard"></i> Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a routerLink="/waste-collection"><i class="fas fa-truck"></i> Waste Collection</a>
-        </li>
-        <li class="nav-item">
-          <a routerLink="/recycling"><i class="fas fa-recycle"></i> Recycling</a>
-        </li>
-        <li class="nav-item">
-          <a routerLink="/disposal"><i class="fas fa-trash"></i> Disposal</a>
-        </li>
-        <li class="nav-item">
-          <a routerLink="/reports"><i class="fas fa-chart-line"></i> Reports</a>
-        </li>
-        <li class="nav-item">
-          <a routerLink="/admin"><i class="fas fa-cog"></i> Admin Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a routerLink="/profile"><i class="fas fa-user"></i> Profile</a>
-        </li>
-        <li class="nav-item">
-          <a routerLink="/access"><i class="fas fa-sign-in-alt"></i> Login</a>
-        </li>
-        <li class="nav-item">
-          <a routerLink="/contact"><i class="fas fa-envelope"></i> Contact</a>
-        </li>
-      </ul>
-    </nav>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav [mode]="'side'" [opened]="isMenuOpen" class="sidenav">
+    <div class="nav-header">
+      <div class="logo-container">
+        <mat-icon>eco</mat-icon>
+        <span>{{appTitle}}</span>
+      </div>
+    </div>
+    
+    <mat-nav-list>
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </a>
+      <a mat-list-item routerLink="/waste-collection" routerLinkActive="active">
+        <mat-icon>local_shipping</mat-icon>
+        <span>Waste Collection</span>
+      </a>
+      <a mat-list-item routerLink="/recycling" routerLinkActive="active">
+        <mat-icon>recycling</mat-icon>
+        <span>Recycling</span>
+      </a>
+      <a mat-list-item routerLink="/disposal" routerLinkActive="active">
+        <mat-icon>delete</mat-icon>
+        <span>Disposal</span>
+      </a>
+      <mat-divider></mat-divider>
+      <a mat-list-item routerLink="/reports" routerLinkActive="active">
+        <mat-icon>assessment</mat-icon>
+        <span>Reports</span>
+      </a>
+      <a mat-list-item routerLink="/admin" routerLinkActive="active">
+        <mat-icon>settings</mat-icon>
+        <span>Admin Dashboard</span>
+      </a>
+      <mat-divider></mat-divider>
+      <a mat-list-item routerLink="/profile" routerLinkActive="active">
+        <mat-icon>person</mat-icon>
+        <span>Profile</span>
+      </a>
+      <a mat-list-item routerLink="/access" routerLinkActive="active">
+        <mat-icon>login</mat-icon>
+        <span>Login</span>
+      </a>
+      <a mat-list-item routerLink="/contact" routerLinkActive="active">
+        <mat-icon>contact_page</mat-icon>
+        <span>Contact</span>
+      </a>
+    </mat-nav-list>
   </mat-sidenav>
-  
+
   <mat-sidenav-content>
     <div class="content">
       <router-outlet></router-outlet>
