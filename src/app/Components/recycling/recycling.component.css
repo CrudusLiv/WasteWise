@@ -2,125 +2,139 @@
     max-width: 1200px;
     width: 90%;
     margin: 0 auto;
-    padding: 30px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(199, 232, 202, 0.8));
-    border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  }
-  
-  .recycling-card-header {
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.recycling-card-header {
     display: flex;
+    flex-direction: column;
     align-items: center;
     text-align: center;
-    justify-content: center;
-    margin-bottom: 25px;
-    background-color: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    padding: 20px 25px;
-    margin-bottom: 20px;
-    width: 100%;
-  }
-  
-  .recycling-card-header h1 {
-    color: #2E7D32;
-    margin-bottom: 10px;
-    font-size: clamp(24px, 3vw, 28px);
-  }
-  
-  .recycling-card-header mat-icon {
-    color: #2E7D32;
-    margin-right: 12px;
-    font-size: 25px;
-  }
-  
-  .recycling-cards-container {
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    margin-bottom: 40px;
+    border: 2px solid rgba(46, 125, 50, 0.1);
+}
+
+.recycling-card-header h1 {
+    color: #1B5E20;
+    font-size: clamp(28px, 4vw, 36px);
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.recycling-card-header mat-icon {
+  color: #2E7D32;
+  font-size: 36px;
+  height: 36px;
+  width: 36px;
+  margin-right: 15px;
+  filter: drop-shadow(0 2px 4px rgba(46, 125, 50, 0.2));
+}
+
+.recycling-cards-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Creates exactly 2 equal columns */
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
     margin: 0 auto;
-    width: 100%;
-  }
-  
-  mat-card {
-    background: white;
-    border-radius: 16px;
-    width: 100%;
-    height: 350px; /* Fixed height for all cards */
-    padding: 10px;
-    text-align: left;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  }
-  
-  mat-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 28px rgba(46, 125, 50, 0.15);
-  }
-  
-  mat-card mat-card-header {
-    display: flex;
+}
+
+mat-card {
+    height: 380px;
+    padding: 25px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(76, 175, 80, 0.1);
+}
+
+mat-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(46, 125, 50, 0.2);
+}
+
+mat-card-header {
+    background: rgba(232, 245, 233, 0.5);
+    border-radius: 15px;
+    padding: 20px;
+    margin: -25px -25px 20px -25px;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #e8f5e9;
-    padding-bottom: 15px;
-    width: 100%;
-    height: 20%;
-  }
-  
-  mat-icon {
-    color: #4CAF50;
-    font-size: 20px;
-  
-  }
-  
-  mat-card mat-card-title {
-    font-size: 22px;
+    justify-content: center;
+}
+
+mat-card-title {
+    font-size: clamp(20px, 2.5vw, 24px);
     font-weight: 600;
-    color: #2E7D32;
-    margin: 0;
-    width: 100%;
-    
-  }
-  
-  mat-card-content p {
-    font-size: clamp(12px, 1.5vw, 14px);
-    color: #555555;
-  }
-  
-  mat-card-content ul {
-    list-style-type: none;
-    padding-left: 0;
-    margin-top: 16px;
-    flex-grow: 1;
-    display: grid;
-  }
-  
-  mat-card-content li {
-    padding: auto 0;
-    color: #555;
-    border-bottom: 1px solid #e8f5e9;
+    color: #1B5E20;
+    align-items: center;
+    margin-right: 10px;
+}
+
+mat-card-content {
+    padding: 20px 0;
+}
+
+mat-card-content p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #424242;
+    margin-bottom: 20px;
+}
+
+mat-card-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+mat-card-content li {
+    padding: 12px 0;
+    color: #424242;
+    border-bottom: 1px solid rgba(76, 175, 80, 0.1);
+    font-size: 15px;
     display: flex;
     align-items: center;
-    font-size: clamp(12px, 1.5vw, 14px);
-  }
-  
-  mat-card-content li:before {
-    content: '•';
+    gap: 10px;
+}
+
+mat-card-content li:before {
+    content: '✓';
     color: #4CAF50;
     font-weight: bold;
-    margin-right: 10px;
-  }
-  
-  mat-card-content li:last-child {
-    border-bottom: none;
-  }
-  
-  /* Add these responsive font styles */
-  mat-card-title {
-    font-size: clamp(18px, 2vw, 22px);
-  }
-  
-  
-  
+}
+
+/* Card Icons */
+mat-card mat-card-header mat-icon {
+  font-size: 28px;
+  height: 28px;
+  width: 28px;
+  padding: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+  color: #2E7D32;
+  transition: all 0.3s ease;
+}
+
+/* Icon hover effect */
+mat-card:hover mat-card-header mat-icon {
+  transform: rotate(360deg);
+}
+
+/* Custom icons for specific cards */
+.paper-recycling-card mat-icon {
+  background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+}
+
+.plastic-recycling-card mat-icon {
+  background: linear-gradient(135deg, #E0F2F1, #B2DFDB);
+}
+
+.glass-recycling-card mat-icon {
+  background: linear-gradient(135deg, #F3E5F5, #E1BEE7);
+}
+
+.aluminium-recycling-card mat-icon {
+  background: linear-gradient(135deg, #FAFAFA, #F5F5F5);
+}

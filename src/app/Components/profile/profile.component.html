@@ -1,58 +1,46 @@
 <div class="profile-container">
   <mat-card>
-    <div class="profile-header">
-      <div class="profile-avatar" role="img" aria-label="User profile avatar">
-        <mat-icon class="avatar-icon" aria-hidden="true">account_circle</mat-icon>
+      <div class="profile-header">
+          <div class="profile-avatar" role="img" aria-label="User profile avatar">
+              <mat-icon class="avatar-icon" aria-hidden="true">account_circle</mat-icon>
+          </div>
+          <button mat-icon-button 
+                  class="notifications-button" 
+                  (click)="openNotificationsDialog()"
+                  [attr.aria-label]="'You have ' + notifications.length + ' notifications'">
+              <mat-icon [matBadge]="notifications.length" 
+                       matBadgeColor="warn" 
+                       [matBadgeHidden]="notifications.length === 0">
+                  notifications
+              </mat-icon>
+          </button>
       </div>
-      <button mat-icon-button 
-              class="notifications-button" 
-              (click)="openNotificationsDialog()"
-              [attr.aria-label]="'You have ' + notifications.length + ' notifications'">
-        <mat-icon [matBadge]="notifications.length" 
-                 matBadgeColor="warn" 
-                 [matBadgeHidden]="notifications.length === 0"
-                 aria-hidden="false">
-          notifications
-        </mat-icon>
-      </button>
-    </div>
 
-    <mat-card-content>
       <div class="profile-details">
-        <h1 class="user-name">{{user.fullName}}</h1>
-        <p class="community-name" role="text">{{user.communityName}}</p>
+          <h1 class="user-name">{{user.fullName}}</h1>
+          <p class="community-name">{{user.communityName}}</p>
 
-        <mat-list role="list">
-          <mat-list-item role="listitem">
-            <mat-icon matListItemIcon aria-hidden="true">email</mat-icon>
-            <span matListItemTitle>{{user.email}}</span>
-            <span class="visually-hidden">Email address:</span>
-          </mat-list-item>
+          <mat-list>
+              <mat-list-item>
+                  <mat-icon>email</mat-icon>
+                  <span>{{user.email}}</span>
+              </mat-list-item>
 
-          <mat-list-item role="listitem">
-            <mat-icon matListItemIcon aria-hidden="true">phone</mat-icon>
-            <span matListItemTitle>{{user.contactNumber}}</span>
-            <span class="visually-hidden">Phone number:</span>
-          </mat-list-item>
+              <mat-list-item>
+                  <mat-icon>phone</mat-icon>
+                  <span>{{user.contactNumber}}</span>
+              </mat-list-item>
 
-          <mat-list-item role="listitem">
-            <mat-icon matListItemIcon aria-hidden="true">home</mat-icon>
-            <span matListItemTitle>{{user.residentialAddress}}</span>
-            <span class="visually-hidden">Residential address:</span>
-          </mat-list-item>
-        </mat-list>
+              <mat-list-item>
+                  <mat-icon>home</mat-icon>
+                  <span>{{user.residentialAddress}}</span>
+              </mat-list-item>
+          </mat-list>
+
+          <button mat-raised-button (click)="onEditProfile()">
+              <mat-icon>edit</mat-icon>
+              Edit Profile
+          </button>
       </div>
-    </mat-card-content>
-
-    <mat-card-actions align="end">
-      <button mat-raised-button 
-              color="primary" 
-              (click)="onEditProfile()"
-              aria-label="Edit profile">
-        <mat-icon aria-hidden="true">edit</mat-icon>
-        Edit Profile
-      </button>
-    </mat-card-actions>
   </mat-card>
 </div>
-  

@@ -9,7 +9,6 @@
 
 }
 
-
 .contact-header {
   text-align: center;
   padding: 50px 30px;
@@ -17,12 +16,13 @@
   color: white;
 }
 
-.header-icon {
+.header-icon mat-icon {
   background: rgba(255, 255, 255, 0.2);
   width: 80px;
   height: 80px;
   border-radius: 50%;
   display: flex;
+  font-size: clamp(24px, 5vw, 40px);
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
@@ -44,6 +44,15 @@
   grid-template-columns: 1.5fr 1fr;
   gap: 40px;
   padding: 50px;
+}
+
+@media (max-width: 991.98px) {
+  .form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding: 50px;
+  }
 }
 
 .form-container {

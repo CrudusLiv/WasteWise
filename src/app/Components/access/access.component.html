@@ -1,29 +1,33 @@
-<div class="login-background">
-    <div class="login-container">
-        <div class="login-header">
-            <mat-icon class="eco-icon">eco</mat-icon>
+<div class="access-background">
+    <div class="access-container">
+        <div class="access-header">
+            <div class="logo-container">
+                <mat-icon class="eco-icon">eco</mat-icon>
+            </div>
             <h1>WasteWise Management</h1>
-            <p class="subtitle">Sustainable Solutions for a Cleaner Future</p>
+            <mat-card-subtitle>Sustainable Solutions for a Cleaner Future</mat-card-subtitle>
         </div>
 
-        <mat-card class="login-card">
-            <mat-tab-group [(selectedIndex)]="selectedTab">
+        <mat-card class="signin-card">
+            <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="300ms">
                 <mat-tab label="Sign In">
-                    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                        <mat-form-field appearance="outline">
+                    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="form-container">
+                        <mat-form-field appearance="outline" class="form-field">
                             <mat-label>Email</mat-label>
-                            <input matInput formControlName="email" type="email">
-                            <mat-icon matPrefix>email</mat-icon>
+                            <input matInput formControlName="email" type="email" placeholder="Enter your email">
+                            <mat-icon matPrefix class="field-icon">email</mat-icon>
                             <mat-error *ngIf="loginForm.get('email')?.invalid">
                                 {{getErrorMessage('email', 'login')}}
                             </mat-error>
                         </mat-form-field>
 
-                        <mat-form-field appearance="outline">
+                        <mat-form-field appearance="outline" class="form-field">
                             <mat-label>Password</mat-label>
-                            <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'">
-                            <mat-icon matPrefix>lock</mat-icon>
-                            <mat-icon matSuffix (click)="hidePassword = !hidePassword">
+                            <input matInput formControlName="password" 
+                                   [type]="hidePassword ? 'password' : 'text'"
+                                   placeholder="Enter your password">
+                            <mat-icon matPrefix class="field-icon">lock</mat-icon>
+                            <mat-icon matSuffix (click)="hidePassword = !hidePassword" class="visibility-icon">
                                 {{hidePassword ? 'visibility_off' : 'visibility'}}
                             </mat-icon>
                             <mat-error *ngIf="loginForm.get('password')?.invalid">
@@ -31,41 +35,79 @@
                             </mat-error>
                         </mat-form-field>
 
-                        <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid">
-                            Sign In
+                        <button mat-raised-button color="primary" type="submit" 
+                                [disabled]="!loginForm.valid" class="submit-button">
+                            <mat-icon>login</mat-icon>
+                            <span>Sign In</span>
                         </button>
                     </form>
                 </mat-tab>
 
                 <mat-tab label="Sign Up">
-                    <form [formGroup]="signupForm" (ngSubmit)="onSignup()">
-                        <mat-form-field appearance="outline">
+                    <form [formGroup]="signupForm" (ngSubmit)="onSignup()" class="form-container">
+                        <div class="form-header">
+                            <h3>Create Your Account</h3>
+                            <p>Join us in making a sustainable difference</p>
+                        </div>
+
+                        <mat-form-field appearance="outline" class="form-field">
                             <mat-label>Full Name</mat-label>
-                            <input matInput formControlName="name">
-                            <mat-icon matPrefix>person</mat-icon>
+                            <input matInput formControlName="name" placeholder="Enter your full name">
+                            <mat-icon matSuffix class="field-icon">person</mat-icon>
+                            <mat-error *ngIf="signupForm.get('name')?.invalid">
+                                {{getErrorMessage('name', 'signup')}}
+                            </mat-error>
                         </mat-form-field>
 
-                        <mat-form-field appearance="outline">
+                        <mat-form-field appearance="outline" class="form-field">
                             <mat-label>Email</mat-label>
-                            <input matInput formControlName="email" type="email">
-                            <mat-icon matPrefix>email</mat-icon>
+                            <input matInput formControlName="email" type="email" 
+                                   placeholder="your.email@example.com">
+                            <mat-icon matSuffix class="field-icon">email</mat-icon>
+                            <mat-error *ngIf="signupForm.get('email')?.invalid">
+                                {{getErrorMessage('email', 'signup')}}
+                            </mat-error>
                         </mat-form-field>
 
-                        <mat-form-field appearance="outline">
-                            <mat-label>Password</mat-label>
-                            <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'">
-                            <mat-icon matPrefix>lock</mat-icon>
-                            <mat-icon matSuffix (click)="hidePassword = !hidePassword">
-                                {{hidePassword ? 'visibility_off' : 'visibility'}}
-                            </mat-icon>
-                        </mat-form-field>
+                        <div class="password-fields">
+                            <mat-form-field appearance="outline" class="form-field">
+                                <mat-label>Password</mat-label>
+                                <input matInput formControlName="password" 
+                                       [type]="hidePassword ? 'password' : 'text'"
+                                       placeholder="Create a strong password">
+                                <mat-icon matSuffix (click)="hidePassword = !hidePassword" 
+                                          class="visibility-icon">
+                                    {{hidePassword ? 'visibility_off' : 'visibility'}}
+                                </mat-icon>
+                                <mat-icon matSuffix class="field-icon">lock</mat-icon>
+                                <mat-error *ngIf="signupForm.get('password')?.invalid">
+                                    {{getErrorMessage('password', 'signup')}}
+                                </mat-error>
+                            </mat-form-field>
 
-                        <mat-checkbox formControlName="terms" color="primary">
-                            I agree to the Terms of Service
-                        </mat-checkbox>
+                            <mat-form-field appearance="outline" class="form-field">
+                                <mat-label>Confirm Password</mat-label>
+                                <input matInput formControlName="confirmPassword" 
+                                       [type]="hidePassword ? 'password' : 'text'"
+                                       placeholder="Confirm your password">
+                                <mat-icon matSuffix class="field-icon">lock_clock</mat-icon>
+                                <mat-error *ngIf="signupForm.get('confirmPassword')?.invalid">
+                                    {{getErrorMessage('confirmPassword', 'signup')}}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
 
-                        <button mat-raised-button color="primary" type="submit" [disabled]="!signupForm.valid">
-                            Create Account
+                        <div class="terms-container">
+                            <mat-checkbox formControlName="terms" color="primary">
+                                I agree to the <a href="#" class="terms-link">Terms of Service</a> 
+                                and <a href="#" class="terms-link">Privacy Policy</a>
+                            </mat-checkbox>
+                        </div>
+
+                        <button mat-raised-button color="primary" type="submit" 
+                                [disabled]="!signupForm.valid" class="submit-button">
+                            <mat-icon>how_to_reg</mat-icon>
+                            <span>Create Account</span>
                         </button>
                     </form>
                 </mat-tab>

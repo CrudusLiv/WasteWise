@@ -1,89 +1,286 @@
-.login-background {
+.access-background {
     min-height: 100vh;
+    background: linear-gradient(135deg, rgba(46, 125, 50, 0.15), rgba(27, 94, 32, 0.1));
     display: flex;
-    justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%);
-    padding: 2rem;
+    justify-content: center;
+    padding: 40px 20px;
+    background-blend-mode: overlay;
 }
 
-.login-container {
-    width: 100%;
-    max-width: 450px;
+.access-container {
+    max-width: 480px;
+    width: 90%;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    transform: translateY(0);
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
 }
 
-.login-header {
+.access-container:hover {
+    transform: translateY(-5px);
+}
+
+.access-header {
     text-align: center;
-    margin-bottom: 2rem;
+    padding: 40px 30px;
+    background: linear-gradient(135deg, #43A047 0%, #1B5E20 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction:column;
 }
 
 .eco-icon {
-    font-size: 48px;
-    height: 48px;
-    width: 48px;
-    color: #2E7D32;
-}
-
-h1 {
-    color: #1B5E20;
-    margin: 1rem 0 0.5rem;
-    font-weight: 600;
-}
-
-.subtitle {
-    color: #2E7D32;
-    margin: 0;
-    font-size: 1.1rem;
-}
-
-.login-card {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(46, 125, 50, 0.2);
-    padding: 2rem;
-}
-
-form {
+    width: 80px;
+    height: 80px;
+    font-size: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem 0;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+}
+
+.access-header h1 {
+    font-size: clamp(28px, 4vw, 32px);
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+mat-card-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 20px;
+}   
+
+.signin-card {
+    padding: 35px;
+    background: white;
+    border-radius: 20px;
 }
 
 mat-form-field {
     width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
 }
 
-.mat-mdc-form-field-icon-prefix {
+mat-tab-group{
+    width: 100%;
+    margin-bottom: 20px;
+}
+.terms-container {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.terms-container mat-checkbox {
+    margin: 0;
     color: #2E7D32;
 }
-
-button[type="submit"] {
-    margin-top: 1rem;
-    height: 48px;
-    font-size: 1.1rem;
+.terms-container mat-checkbox:checked {
+    margin: 0;
+    color: #2E7D32;
     background-color: #2E7D32;
-    transition: background-color 0.3s ease;
 }
 
-button[type="submit"]:hover:not([disabled]) {
-    background-color: #1B5E20;
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-flex {
+    background: rgba(232, 245, 233, 0.5);
+    border-radius: 12px;
+    padding: 8px 15px;
+    transition: background 0.3s ease;
 }
 
-mat-checkbox {
-    margin: 0.5rem 0;
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-flex:hover {
+    background: rgba(232, 245, 233, 0.8);
 }
 
-.mat-tab-group {
-    border-radius: 15px;
-}
-
-.mat-tab-label {
+::ng-deep .mat-tab-label {
+    height: 48px;
+    padding: 0 24px;
+    cursor: pointer;
+    box-sizing: border-box;
+    color: #2E7D32;
+    opacity: 1;
+    min-width: 160px;
     font-weight: 500;
 }
 
-.mat-tab-label-active {
+::ng-deep .mat-tab-group.mat-primary .mat-ink-bar {
+    background-color: #2E7D32;
+    height: 3px;
+}
+
+button[mat-raised-button] {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #43A047, #1B5E20);
+    color: white;
+    border-radius: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: clamp(14px, 2vw, 16px);
+    mat-icon{
+        color: #fff;
+    }
+}
+
+button[mat-raised-button]:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(46, 125, 50, 0.3);
+}
+
+mat-checkbox {
+    margin: 15px 0;
     color: #2E7D32;
 }
 
+mat-icon  {
+    color: #4CAF50;
+    transition: transform 0.3s ease;
+    margin-right: 20px;
+}
+
+mat-icon:hover {
+    transform: scale(1.1);
+}.password-fields .mat-form-field {
+    position: relative;
+}
+
+::ng-deep .mat-form-field-suffix {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-left: 0 !important;
+}
+
+.password-fields .field-icon,
+.password-fields .visibility-icon {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+}
+
+.field-icon {
+    color: #43A047;
+}
+
+.visibility-icon {
+    cursor: pointer;
+    color: #43A047;
+}
+
+/* Specific styling for signup form */
+.mat-tab-group form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-top: 20px;
+}
+
+.mat-form-field {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.field-icon {
+    color: #43A047;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+}
+
+/* Error message styling */
+.mat-error {
+    font-size: 12px;
+    margin-top: 4px;
+    color: #f44336;
+    transition: opacity 0.3s ease;
+}
+
+/* Checkbox custom styling */
+::ng-deep .mat-checkbox-checked .mat-checkbox-background {
+    background: linear-gradient(135deg, #43A047, #1B5E20) !important;
+}
+
+/* Input icon prefix enhancement */
+.mat-form-field .mat-icon {
+    margin-right: 8px;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.mat-form-field:focus-within .mat-icon {
+    opacity: 1;
+    color: #2E7D32;
+}
+
+.mat-form-field:focus-within mat-label {
+    color: #2E7D32;
+}
+
+mat-label {
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    margin-bottom: 4px;
+    margin-right: 4px;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+.logo-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+}
+
+.form-container {
+    padding: 20px 0;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0;
+}
+
+
+
+/* Links and Text */
+.terms-link {
+    color: #2E7D32;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.terms-link:hover {
+    color: #43A047;
+    text-decoration: underline;
+}

@@ -1,6 +1,6 @@
 <mat-toolbar color="primary" class="toolbar">
   <button mat-icon-button class="menu-button" (click)="toggleMenu()">
-    <mat-icon>menu</mat-icon>
+    <mat-icon>{{ isMenuOpen ? 'menu_open' : 'menu' }}</mat-icon>
   </button>
   <span class="app-title">{{appTitle}}</span>
   <span class="toolbar-spacer"></span>
@@ -10,7 +10,7 @@
 </mat-toolbar>
 
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #sidenav [mode]="'side'" [opened]="isMenuOpen" class="sidenav">
+  <mat-sidenav #sidenav [mode]="'push'" [opened]="isMenuOpen" class="sidenav">
     <div class="nav-header">
       <div class="logo-container">
         <mat-icon>eco</mat-icon>

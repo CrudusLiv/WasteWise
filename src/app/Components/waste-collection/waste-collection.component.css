@@ -3,7 +3,7 @@
     margin: 0 auto;
     padding: 40px 20px;
     min-height: calc(100vh - 64px);
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background: transparent;
   }
   
   .collection-card {
