@@ -20,6 +20,8 @@
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
+    "@types/cors": "^2.8.17",
+    "cors": "^2.8.5",
     "express": "^4.21.1",
     "mongoose": "^8.7.3",
     "rxjs": "~7.8.0",
