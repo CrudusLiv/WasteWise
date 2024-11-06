@@ -1,0 +1,80 @@
+.profile-setup-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+mat-card {
+  padding: 2rem;
+  border-radius: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+mat-card-header {
+  margin-bottom: 2rem;
+  text-align: center;
+  display: block;
+}
+
+mat-card-title {
+  font-size: 1.8rem;
+  color: #2E7D32;
+  margin-bottom: 0.5rem;
+}
+
+mat-card-subtitle {
+  font-size: 1rem;
+  color: #666;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+button[type="submit"] {
+  min-width: 200px;
+  padding: 0.5rem 2rem;
+}
+
+mat-icon {
+  margin-right: 0.5rem;
+}
+
+mat-progress-bar {
+  margin-top: 1rem;
+}
+
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  mat-card {
+    padding: 1rem;
+  }
+}
+
+.mat-mdc-form-field {
+  margin-bottom: 1rem;
+}
+
+textarea {
+  min-height: 100px;
+} 

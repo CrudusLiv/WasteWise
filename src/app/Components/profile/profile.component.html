@@ -1,46 +1,49 @@
 <div class="profile-container">
   <mat-card>
-      <div class="profile-header">
-          <div class="profile-avatar" role="img" aria-label="User profile avatar">
-              <mat-icon class="avatar-icon" aria-hidden="true">account_circle</mat-icon>
-          </div>
-          <button mat-icon-button 
-                  class="notifications-button" 
-                  (click)="openNotificationsDialog()"
-                  [attr.aria-label]="'You have ' + notifications.length + ' notifications'">
-              <mat-icon [matBadge]="notifications.length" 
-                       matBadgeColor="warn" 
-                       [matBadgeHidden]="notifications.length === 0">
-                  notifications
-              </mat-icon>
-          </button>
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+    
+    <div class="profile-header">
+      <div class="profile-avatar" role="img" aria-label="User profile avatar">
+        <mat-icon class="avatar-icon" aria-hidden="true">account_circle</mat-icon>
       </div>
+    </div>
 
-      <div class="profile-details">
-          <h1 class="user-name">{{user.fullName}}</h1>
-          <p class="community-name">{{user.communityName}}</p>
+    <div class="profile-details">
+      <h1 class="user-name">{{user.fullName}}</h1>
+      <p class="user-email">{{user.email}}</p>
 
-          <mat-list>
-              <mat-list-item>
-                  <mat-icon>email</mat-icon>
-                  <span>{{user.email}}</span>
-              </mat-list-item>
+      <mat-list>
+        <mat-list-item>
+          <mat-icon matListItemIcon>phone</mat-icon>
+          <span matListItemTitle>Phone</span>
+          <span matListItemLine>{{user.phoneNumber}}</span>
+        </mat-list-item>
 
-              <mat-list-item>
-                  <mat-icon>phone</mat-icon>
-                  <span>{{user.contactNumber}}</span>
-              </mat-list-item>
+        <mat-list-item>
+          <mat-icon matListItemIcon>home</mat-icon>
+          <span matListItemTitle>Address</span>
+          <span matListItemLine>{{getFormattedAddress()}}</span>
+        </mat-list-item>
 
-              <mat-list-item>
-                  <mat-icon>home</mat-icon>
-                  <span>{{user.residentialAddress}}</span>
-              </mat-list-item>
-          </mat-list>
+        <mat-list-item>
+          <mat-icon matListItemIcon>apartment</mat-icon>
+          <span matListItemTitle>Residence Info</span>
+          <span matListItemLine>{{getResidenceInfo()}}</span>
+        </mat-list-item>
 
-          <button mat-raised-button (click)="onEditProfile()">
-              <mat-icon>edit</mat-icon>
-              Edit Profile
-          </button>
+        <mat-list-item>
+          <mat-icon matListItemIcon>schedule</mat-icon>
+          <span matListItemTitle>Preferred Pickup Time</span>
+          <span matListItemLine>{{getPickupTimeLabel()}}</span>
+        </mat-list-item>
+      </mat-list>
+
+      <div class="profile-actions">
+        <button mat-raised-button color="primary" (click)="onEditProfile()">
+          <mat-icon>edit</mat-icon>
+          Edit Profile
+        </button>
       </div>
+    </div>
   </mat-card>
 </div>

@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSidenav } from '@angular/material/sidenav';
 import { NotificationComponent } from '../notification/notification.component';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-navigation',
@@ -10,11 +13,29 @@ import { NotificationComponent } from '../notification/notification.component';
 export class NavigationComponent {
   isMenuOpen = false;
   appTitle = 'WasteWise';
+  @ViewChild('sidenav') sidenav!: MatSidenav;
 
-  constructor(private dialog: MatDialog) {}
+  constructor(
+    private dialog: MatDialog,
+    private router: Router
+  ) {
+    // Subscribe to router events to close menu on navigation
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.closeMenu();
+    });
+  }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  closeMenu() {
+    this.isMenuOpen = false;
+    if (this.sidenav) {
+      this.sidenav.close();
+    }
   }
 
   openNotifications(): void {

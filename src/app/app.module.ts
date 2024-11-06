@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
-
+import { HttpClientModule } from '@angular/common/http';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AdminComponent } from './Components/admin/admin.component';
@@ -18,6 +19,7 @@ import { RecyclingComponent } from './Components/recycling/recycling.component';
 import { PickupHistoryComponent } from './Components/pickup-history/pickup-history.component';
 import { MaterialModule } from './material/material.module';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { ProfileSetupComponent } from './Components/profile-setup/profile-setup.component';
 
 @NgModule({
   declarations: [
@@ -34,14 +36,15 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     WasteCollectionComponent,
     RecyclingComponent,
     PickupHistoryComponent,
+    ProfileSetupComponent
   ],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
     AppRoutingModule,
     MaterialModule,
-    
-    
+    HttpClientModule,
+    MatSnackBarModule
   ],
   providers: [
     provideAnimationsAsync()

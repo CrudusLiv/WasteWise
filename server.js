@@ -27,13 +27,17 @@ app.use("/uploads", express.static("uploads"));
 
 mongoose
   .connect(
-    "mongodb+srv://CrudusLiv:pNqd4eHjHkWkMNND@cluster0.n2yin.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    "mongodb+srv://CrudusLiv:pNqd4eHjHkWkMNND@cluster0.n2yin.mongodb.net/WasteWise?retryWrites=true&w=majority&appName=Cluster0",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    }
   )
   .then(() => {
-    console.log("connected to database");
+    console.log("Connected to WasteWise database");
   })
-  .catch(() => {
-    console.log("connection failed");
+  .catch((error) => {
+    console.error("Database connection failed:", error);
   });
 
 app.use((req, res, next) => {
@@ -59,6 +63,12 @@ app.post("/api/signup", async (req, res) => {
       return res.status(400).json({ message: "All fields are required." });
     }
 
+    // Check if username already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: "Username already exists." });
+    }
+
     const malaysiaTime = new Date(Date.now() + 8 * 60 * 60 * 1000);
 
     const newUser = new User({
@@ -73,7 +83,11 @@ app.post("/api/signup", async (req, res) => {
     res.status(201).json({ message: "User registered successfully!" });
   } catch (error) {
     console.error("Error during signup:", error);
-    res.status(500).json({ message: "Signup failed", error: error.message });
+    if (error.code === 11000) {
+      res.status(400).json({ message: "Username or email already exists." });
+    } else {
+      res.status(500).json({ message: "Signup failed", error: error.message });
+    }
   }
 });
 
@@ -133,13 +147,10 @@ app.get("/api/check-username", async (req, res) => {
 
   try {
     const user = await User.findOne({ username });
-    if (user) {
-      return res.json(true);
-    }
-    return res.json(false);
+    res.json(!!user); // Returns true if user exists, false if not
   } catch (error) {
     console.error("Error checking username:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
@@ -173,20 +184,25 @@ app.put("/api/user/:id", async (req, res) => {
       runValidators: true,
     });
 
-    res
-      .status(200)
-      .json({ message: "User updated successfully!", user: updatedUser });
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ 
+      message: "User updated successfully!", 
+      user: updatedUser 
+    });
   } catch (error) {
     if (error.code === 11000) {
       res.status(409).json({
-        message:
-          "This email is already registered. Please use a different email.",
+        message: "This email is already registered. Please use a different email.",
       });
     } else {
       console.error("Error updating user data:", error);
-      res
-        .status(500)
-        .json({ message: "Error updating user data", error: error.message });
+      res.status(500).json({ 
+        message: "Error updating user data", 
+        error: error.message 
+      });
     }
   }
 });
@@ -528,6 +544,116 @@ app.patch("/api/notifications/:id", async (req, res) => {
   } catch (error) {
     console.error('Error updating notification:', error);
     res.status(500).json({ message: "Error updating notification" });
+  }
+});
+
+// Update the user schema to include profile fields
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  profile: {
+    fullName: String,
+    phoneNumber: String,
+    address: String,
+    city: String,
+    state: String,
+    postalCode: String,
+    residenceType: String,
+    numberOfResidents: Number,
+    preferredPickupTime: String
+  },
+  profileCompleted: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+  lastUpdated: { type: Date },
+  lastLogin: { type: Date }
+});
+
+// Update profile route
+app.put("/api/user/:id/profile", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const profileData = req.body;
+    
+    console.log('Updating profile for user:', userId);
+    console.log('Profile data:', profileData);
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { 
+        $set: {
+          fullName: profileData.fullName,
+          phoneNumber: profileData.phoneNumber,
+          address: profileData.address,
+          city: profileData.city,
+          state: profileData.state,
+          postalCode: profileData.postalCode,
+          residenceType: profileData.residenceType,
+          numberOfResidents: profileData.numberOfResidents,
+          preferredPickupTime: profileData.preferredPickupTime,
+          profileCompleted: true,
+          lastUpdated: new Date()
+        }
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      console.log('User not found:', userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    console.log('Profile updated successfully:', updatedUser);
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: {
+        fullName: updatedUser.fullName,
+        phoneNumber: updatedUser.phoneNumber,
+        address: updatedUser.address,
+        city: updatedUser.city,
+        state: updatedUser.state,
+        postalCode: updatedUser.postalCode,
+        residenceType: updatedUser.residenceType,
+        numberOfResidents: updatedUser.numberOfResidents,
+        preferredPickupTime: updatedUser.preferredPickupTime,
+        email: updatedUser.email
+      }
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ 
+      message: "Error updating profile", 
+      error: error.message 
+    });
+  }
+});
+
+// Get profile route
+app.get("/api/user/:id/profile", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      fullName: user.fullName || '',
+      phoneNumber: user.phoneNumber || '',
+      address: user.address || '',
+      city: user.city || '',
+      state: user.state || '',
+      postalCode: user.postalCode || '',
+      residenceType: user.residenceType || '',
+      numberOfResidents: user.numberOfResidents || 0,
+      preferredPickupTime: user.preferredPickupTime || '',
+      email: user.email
+    });
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    res.status(500).json({ message: "Error fetching profile", error: error.message });
   }
 });
 

@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-access',
@@ -12,7 +15,12 @@ export class AccessComponent implements OnInit {
   hidePassword: boolean = true;
   selectedTab: number = 0;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+    private snackBar: MatSnackBar
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -24,20 +32,59 @@ export class AccessComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
       terms: [false, Validators.requiredTrue]
-    });
+    }, { validator: this.passwordMatchValidator });
   }
 
   ngOnInit(): void {}
 
+  passwordMatchValidator(g: FormGroup) {
+    return g.get('password')?.value === g.get('confirmPassword')?.value
+      ? null : { mismatch: true };
+  }
+
   onSubmit() {
     if (this.loginForm.valid) {
-      console.log(this.loginForm.value);
+      this.authService.login(this.loginForm.value).subscribe({
+        next: (response) => {
+          this.snackBar.open('Login successful!', 'Close', { duration: 3000 });
+          this.router.navigate(['/dashboard']);
+        },
+        error: (error) => {
+          this.snackBar.open(error || 'Login failed', 'Close', { duration: 3000 });
+        }
+      });
     }
   }
 
   onSignup() {
     if (this.signupForm.valid) {
-      console.log(this.signupForm.value);
+      this.authService.signup(this.signupForm.value).subscribe({
+        next: (response) => {
+          const loginData = {
+            email: this.signupForm.value.email,
+            password: this.signupForm.value.password
+          };
+          
+          this.authService.login(loginData).subscribe({
+            next: (loginResponse) => {
+              this.snackBar.open('Registration successful! Please complete your profile.', 'Close', { 
+                duration: 3000 
+              });
+              this.router.navigate(['/profile-setup']);
+            },
+            error: (error) => {
+              this.snackBar.open('Login failed after signup', 'Close', { 
+                duration: 3000 
+              });
+            }
+          });
+        },
+        error: (error) => {
+          this.snackBar.open(error || 'Registration failed', 'Close', { 
+            duration: 3000 
+          });
+        }
+      });
     }
   }
 
@@ -51,6 +98,8 @@ export class AccessComponent implements OnInit {
       return 'Please enter a valid email';
     } else if (control?.hasError('minlength')) {
       return 'Password must be at least 6 characters long';
+    } else if (control?.hasError('mismatch')) {
+      return 'Passwords do not match';
     }
     return '';
   }

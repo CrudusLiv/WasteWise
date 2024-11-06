@@ -1,13 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationComponent } from '../notification/notification.component';
+import { AuthService } from '../../services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 interface UserProfile {
   fullName: string;
-  communityName: string;
   email: string;
-  contactNumber: string;
-  residentialAddress: string;
+  phoneNumber: string;
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  residenceType: string;
+  numberOfResidents: number;
+  preferredPickupTime: string;
 }
 
 interface Notification {
@@ -18,26 +26,56 @@ interface Notification {
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrl: './profile.component.css'
+  styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
   user: UserProfile = {
-    fullName: 'John Doe',
-    communityName: 'Subang Jaya',
-    email: 'john.doe@example.com',
-    contactNumber: '+60 12-345-6789',
-    residentialAddress: 'Bandar Sunway, Subang Jaya, Selangor, 47500'
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    address: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    residenceType: '',
+    numberOfResidents: 0,
+    preferredPickupTime: ''
   };
   
+  loading = true;
   notifications: Notification[] = [
     { message: 'New pickup scheduled', date: new Date() },
     { message: 'Collection completed', date: new Date() }
   ];
 
-  constructor(private dialog: MatDialog) {}
+  constructor(
+    private dialog: MatDialog,
+    private authService: AuthService,
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    // Initialize any necessary data
+    this.loadUserProfile();
+  }
+
+  loadUserProfile(): void {
+    this.loading = true;
+    this.authService.getUserProfile().subscribe({
+      next: (profileData) => {
+        this.user = {
+          ...profileData,
+          email: localStorage.getItem('userEmail') || ''
+        };
+        this.loading = false;
+      },
+      error: (error) => {
+        this.snackBar.open('Error loading profile. Please try again.', 'Close', {
+          duration: 3000
+        });
+        this.loading = false;
+      }
+    });
   }
 
   openNotificationsDialog(): void {
@@ -53,12 +91,23 @@ export class ProfileComponent implements OnInit {
   }
 
   onEditProfile(): void {
-    console.log('Edit profile clicked');
-    // Implement edit profile logic here
+    this.router.navigate(['/profile-setup']);
   }
 
-  getNotificationsLabel(): string {
-    const count = this.notifications.length;
-    return `You have ${count} ${count === 1 ? 'notification' : 'notifications'}`;
+  getFormattedAddress(): string {
+    return `${this.user.address}, ${this.user.city}, ${this.user.state} ${this.user.postalCode}`;
+  }
+
+  getResidenceInfo(): string {
+    return `${this.user.residenceType} - ${this.user.numberOfResidents} residents`;
+  }
+
+  getPickupTimeLabel(): string {
+    const times: { [key: string]: string } = {
+      'morning': 'Morning (6AM - 10AM)',
+      'afternoon': 'Afternoon (11AM - 3PM)',
+      'evening': 'Evening (4PM - 8PM)'
+    };
+    return times[this.user.preferredPickupTime] || this.user.preferredPickupTime;
   }
 }

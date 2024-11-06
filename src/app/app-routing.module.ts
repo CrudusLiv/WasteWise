@@ -12,6 +12,7 @@ import { PickupHistoryComponent } from './Components/pickup-history/pickup-histo
 import { ProfileComponent } from './Components/profile/profile.component';
 import { RecyclingComponent } from './Components/recycling/recycling.component';
 import { WasteCollectionComponent } from './Components/waste-collection/waste-collection.component';
+import { ProfileSetupComponent } from './Components/profile-setup/profile-setup.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -24,6 +25,7 @@ const routes: Routes = [
   { path: 'notification', component: NotificationComponent },
   { path: 'pickup-history', component: PickupHistoryComponent },
   { path: 'profile', component: ProfileComponent },
+  { path: 'profile-setup', component: ProfileSetupComponent },
   { path: 'recycling', component: RecyclingComponent },
   { path: 'reports', component: ReportsComponent },
   { path: 'waste-collection', component: WasteCollectionComponent },
