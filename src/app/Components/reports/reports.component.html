@@ -1,58 +1,39 @@
-<div class="page-container">
-  <div class="report-header">
-    <mat-card-title>
-      <mat-icon>assessment</mat-icon>
-      <h1>Analytics & Reports</h1>
-    </mat-card-title>
-    <mat-card-subtitle>
-      Comprehensive waste management analytics and reporting dashboard
-    </mat-card-subtitle>
-  </div>
-
-  <mat-form-field appearance="outline" class="report-select">
-    <mat-label>Select Report Type</mat-label>
-    <mat-select>
-      <mat-option value="daily">Daily Report</mat-option>
-      <mat-option value="weekly">Weekly Report</mat-option>
-      <mat-option value="monthly">Monthly Report</mat-option>
-      <mat-option value="custom">Custom Range</mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <div class="report-grid">
-    <mat-card class="report-card">
+<div class="reports-container">
+  <h1>Generate Reports</h1>
+  
+  <div class="report-cards">
+    <mat-card class="report-option">
       <mat-card-header>
-        <mat-icon matSuffix>bar_chart</mat-icon>
-        <mat-card-title>Waste Distribution</mat-card-title>
+        <mat-icon color="primary">feedback</mat-icon>
+        <mat-card-title>Feedback History Report</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="chart-container">
-         <!-- Add waste distribution visualization -->
-        </div>
+        <p>Download a detailed report of all your feedback submissions</p>
+        <p class="count">Total Feedback: {{feedbackReports.length}}</p>
       </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="generateFeedbackReport()" [disabled]="!feedbackReports.length">
+          <mat-icon>download</mat-icon>
+          Generate Report
+        </button>
+      </mat-card-actions>
     </mat-card>
 
-    <mat-card class="report-card">
+    <mat-card class="report-option">
       <mat-card-header>
-        <mat-icon matSuffix>trending_up</mat-icon> 
-        <mat-card-title>Recycling Performance</mat-card-title>
+        <mat-icon color="primary">local_shipping</mat-icon>
+        <mat-card-title>Pickup History Report</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="chart-container">
-          <!-- Add performance metrics visualization -->
-        </div>
+        <p>Download a complete report of your waste collection schedules</p>
+        <p class="count">Total Pickups: {{pickupReports.length}}</p>
       </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="generatePickupReport()" [disabled]="!pickupReports.length">
+          <mat-icon>download</mat-icon>
+          Generate Report
+        </button>
+      </mat-card-actions>
     </mat-card>
-  </div>
-
-  <div class="action-buttons">
-    <button mat-raised-button color="primary">
-      <mat-icon >download</mat-icon>
-      Export Report
-    </button>
-    <button mat-raised-button color="primary">
-      <mat-icon>share</mat-icon>
-      Share Insights
-    </button>
   </div>
 </div>

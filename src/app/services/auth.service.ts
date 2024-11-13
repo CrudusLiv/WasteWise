@@ -11,6 +11,7 @@ interface LoginResponse {
 }
 
 interface UserProfileData {
+  username: string;
   fullName: string;
   phoneNumber: string;
   address: string;
@@ -32,7 +33,7 @@ interface ProfileUpdateResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = 'http://localhost:5000/api';
 
   constructor(private http: HttpClient) {}
 
@@ -137,6 +138,16 @@ export class AuthService {
         return throwError(() => error.error?.message || 'Failed to fetch profile');
       })
     );
+  }
+
+  getUserId(): string {
+    // Implement logic to return the user ID
+    return 'someUserId'; // Replace with actual logic
+  }
+
+  getCurrentUserId(): string | null {
+    // Assuming you store the user ID in local storage after login
+    return localStorage.getItem('userId'); // Replace with your actual logic
   }
 
   private handleError(error: HttpErrorResponse) {

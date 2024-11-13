@@ -17,6 +17,21 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
+            <mat-label>Username</mat-label>
+            <input matInput formControlName="username" placeholder="Choose a username">
+            <mat-hint>Only letters, numbers, and underscores allowed</mat-hint>
+            <mat-error *ngIf="profileForm.get('username')?.hasError('required')">
+              Username is required
+            </mat-error>
+            <mat-error *ngIf="profileForm.get('username')?.hasError('minlength')">
+              Username must be at least 3 characters
+            </mat-error>
+            <mat-error *ngIf="profileForm.get('username')?.hasError('pattern')">
+              Username can only contain letters, numbers, and underscores
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
             <mat-label>Phone Number</mat-label>
             <input matInput formControlName="phoneNumber" placeholder="Enter your phone number">
             <mat-error *ngIf="profileForm.get('phoneNumber')?.hasError('required')">
@@ -66,13 +81,12 @@
             </mat-error>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field>
             <mat-label>Residence Type</mat-label>
             <mat-select formControlName="residenceType">
-              <mat-option value="house">House</mat-option>
-              <mat-option value="apartment">Apartment</mat-option>
-              <mat-option value="condominium">Condominium</mat-option>
-              <mat-option value="commercial">Commercial Property</mat-option>
+              <mat-option *ngFor="let type of residenceTypes" [value]="type">
+                {{type}}
+              </mat-option>
             </mat-select>
             <mat-error *ngIf="profileForm.get('residenceType')?.hasError('required')">
               Residence type is required
@@ -87,12 +101,12 @@
             </mat-error>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field>
             <mat-label>Preferred Pickup Time</mat-label>
             <mat-select formControlName="preferredPickupTime">
-              <mat-option value="morning">Morning (6AM - 10AM)</mat-option>
-              <mat-option value="afternoon">Afternoon (11AM - 3PM)</mat-option>
-              <mat-option value="evening">Evening (4PM - 8PM)</mat-option>
+              <mat-option *ngFor="let time of pickupTimes" [value]="time">
+                {{time}}
+              </mat-option>
             </mat-select>
             <mat-error *ngIf="profileForm.get('preferredPickupTime')?.hasError('required')">
               Preferred pickup time is required

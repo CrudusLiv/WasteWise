@@ -1,12 +1,24 @@
 const mongoose = require("mongoose");
 
 const reportSchema = new mongoose.Schema({
-  issueType: { type: String, required: true },
-  location: { type: String, required: true },
-  description: { type: String, required: true },
-  photo: { type: String, required: false },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  createdAt: { type: Date, default: Date.now },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  type: {
+    type: String,
+    required: true,
+    enum: ['daily', 'weekly', 'monthly', 'custom'],
+  },
+  data: {
+    type: Object,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model("Report", reportSchema);

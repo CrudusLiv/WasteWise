@@ -9,8 +9,10 @@
     </div>
 
     <div class="profile-details">
-      <h1 class="user-name">{{user.fullName}}</h1>
-      <p class="user-email">{{user.email}}</p>
+      <div class="user-info-header">
+        <h1 class="user-name">{{user.fullName}}</h1>
+        <p class="username">{{'@' + user.username}}</p>
+      </div>
 
       <mat-list>
         <mat-list-item>

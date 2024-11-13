@@ -1,4 +1,3 @@
-
 <div class="contact-container">
     <div class="contact-header">
       <div class="header-icon">
@@ -12,29 +11,29 @@
       <div class="form-container">
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Full Name</mat-label>
-          <input matInput placeholder="John Doe">
+          <input matInput [(ngModel)]="fullName" placeholder="John Doe">
           <mat-icon matSuffix>person_outline</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Email Address</mat-label>
-          <input matInput placeholder="john@example.com" type="email">
+          <input matInput [(ngModel)]="email" placeholder="john@example.com" type="email">
           <mat-icon matSuffix>alternate_email</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Subject</mat-label>
-          <input matInput placeholder="How can we help?">
+          <input matInput [(ngModel)]="subject" placeholder="How can we help?">
           <mat-icon matSuffix>help_outline</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Your Message</mat-label>
-          <textarea matInput rows="5" placeholder="Tell us more about your requirements"></textarea>
+          <textarea matInput [(ngModel)]="message" rows="5" placeholder="Tell us more about your requirements"></textarea>
           <mat-icon matSuffix>message</mat-icon>
         </mat-form-field>
 
-        <button mat-flat-button class="submit-btn">
+        <button mat-flat-button class="submit-btn" (click)="submitFeedback()">
           Send Message
           <mat-icon>send</mat-icon>
         </button>

@@ -1,14 +1,18 @@
 const express = require("express");
 const multer = require("multer");
+const cors = require('cors');
 const app = express();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const path = require("path");
 const User = require("./backend/models/user");
-const Schedule = require("./backend/models/schedule");
 const Report = require("./backend/models/report");
 const UserActivity = require("./backend/models/user-activity");
 const Notification = require("./backend/models/notification");
+const reportRoutes = require("./backend/routes/report");
+const wasteCollectionRoutes = require('./backend/routes/wasteCollection');
+const WasteCollection = require('./backend/models/wasteCollection');
+const feedbackRoutes = require('./backend/routes/feedback')
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -22,9 +26,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.use(bodyParser.json());
+// Middleware
+app.use(bodyParser.json()); // Ensure JSON body parsing
 app.use("/uploads", express.static("uploads"));
 
+// Connect to MongoDB
 mongoose
   .connect(
     "mongodb+srv://CrudusLiv:pNqd4eHjHkWkMNND@cluster0.n2yin.mongodb.net/WasteWise?retryWrites=true&w=majority&appName=Cluster0",
@@ -40,6 +46,7 @@ mongoose
     console.error("Database connection failed:", error);
   });
 
+// CORS configuration
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -245,140 +252,6 @@ app.get("/api/user-activity", async (req, res) => {
   }
 });
 
-// Route for scheduling pickup (POST)
-app.post("/api/schedule", async (req, res) => {
-  try {
-    const { date, pickupTime, wasteType, userId } = req.body;
-
-    // Validate required fields
-    if (!date || !pickupTime || !wasteType || !userId) {
-      return res.status(400).json({ message: "All fields are required." });
-    }
-
-    const malaysiaTime = new Date(Date.now() + 8 * 60 * 60 * 1000);
-
-    const newSchedule = new Schedule({
-      date,
-      pickupTime,
-      wasteType,
-      status: "Ongoing",
-      userId,
-      createdAt: malaysiaTime,
-    });
-    await newSchedule.save();
-
-    res
-      .status(201)
-      .json({ message: "Pickup scheduled has been successfully added in!" });
-  } catch (error) {
-    console.error("Error scheduling pickup:", error);
-    res
-      .status(500)
-      .json({ message: "Scheduling failed", error: error.message });
-  }
-});
-
-// Route for getting schedules within a date range and waste type (GET)
-app.get("/api/schedule", async (req, res) => {
-  const { startDate, endDate, wasteType, userId, onlyCurrentUser } = req.query;
-
-  try {
-    const query = {
-      date: {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
-      },
-      $or: [{ status: "Completed" }, { status: "Missed" }],
-    };
-
-    if (wasteType && wasteType !== "All") {
-      query.wasteType = wasteType;
-    }
-
-    if (onlyCurrentUser === "true") {
-      query.userId = userId;
-    }
-
-    const schedules = await Schedule.find(query);
-
-    res.status(200).json(schedules);
-  } catch (error) {
-    console.error("Error fetching completed schedules:", error);
-    res.status(500).json({ message: "Error fetching schedules", error });
-  }
-});
-
-// Route for getting all schedules sorted by latest (GET)
-app.get("/api/schedule/all", async (req, res) => {
-  try {
-    const schedules = await Schedule.find().sort({ createdAt: -1 }); // Sort by createdAt in descending order
-    res.status(200).json(schedules);
-  } catch (error) {
-    console.error("Error fetching all schedules:", error);
-    res.status(500).json({ message: "Error fetching schedules", error });
-  }
-});
-
-// Route for getting schedules for the current user (GET)
-app.get("/api/schedule/user/:userId", async (req, res) => {
-  const userId = req.params.userId;
-
-  try {
-    const schedules = await Schedule.find({ userId }).sort({ date: 1 });
-    res.status(200).json(schedules);
-  } catch (error) {
-    console.error("Error fetching user schedules:", error);
-    res.status(500).json({ message: "Error fetching schedules", error });
-  }
-});
-
-// Route for updating schedule status (PUT)
-app.put("/api/schedule/:id", async (req, res) => {
-  const scheduleId = req.params.id;
-  const { status } = req.body;
-
-  try {
-    const updatedSchedule = await Schedule.findByIdAndUpdate(
-      scheduleId,
-      { status },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedSchedule) {
-      return res.status(404).json({ message: "Schedule not found" });
-    }
-
-    res.status(200).json({
-      message: "Schedule updated successfully!",
-      schedule: updatedSchedule,
-    });
-  } catch (error) {
-    console.error("Error updating schedule:", error);
-    res.status(500).json({ message: "Error updating schedule", error });
-  }
-});
-
-// Fetch schedules for the current user
-app.get("/api/schedules/:userId", (req, res) => {
-  const userId = req.params.userId;
-
-  // Get the current date and date 7 days from now
-  const today = new Date();
-  const sevenDaysLater = new Date();
-  sevenDaysLater.setDate(today.getDate() + 7);
-
-  Schedule.find({
-    userId: userId,
-    date: { $lte: sevenDaysLater },
-  })
-    .sort({ date: -1 })
-    .then((schedules) => {
-      res.status(200).json(schedules);
-    })
-    .catch((error) => {
-      res.status(500).json({ message: "Error fetching schedules.", error });
-    });
-});
 
 // Route to create a new report
 app.post("/api/report", upload.single("photo"), async (req, res) => {
@@ -578,11 +451,31 @@ app.put("/api/user/:id/profile", async (req, res) => {
     console.log('Updating profile for user:', userId);
     console.log('Profile data:', profileData);
 
+    // Check if username is already taken
+    if (profileData.username) {
+      const existingUser = await User.findOne({ 
+        username: profileData.username,
+        _id: { $ne: userId } // Exclude current user from check
+      });
+      
+      if (existingUser) {
+        return res.status(400).json({ 
+          message: "Username already taken",
+          errors: {
+            username: {
+              message: "This username is already taken"
+            }
+          }
+        });
+      }
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { 
         $set: {
           fullName: profileData.fullName,
+          username: profileData.username,  // Add username field
           phoneNumber: profileData.phoneNumber,
           address: profileData.address,
           city: profileData.city,
@@ -621,10 +514,10 @@ app.put("/api/user/:id/profile", async (req, res) => {
       }
     });
   } catch (error) {
-    console.error("Error updating profile:", error);
+    console.error('Error updating profile:', error);
     res.status(500).json({ 
-      message: "Error updating profile", 
-      error: error.message 
+      message: "Error updating profile",
+      errors: error.errors
     });
   }
 });
@@ -657,5 +550,9 @@ app.get("/api/user/:id/profile", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+app.use("/api/reports", reportRoutes);
+app.use("/api/waste-collection", wasteCollectionRoutes);
+app.use("/api/feedback", feedbackRoutes);
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

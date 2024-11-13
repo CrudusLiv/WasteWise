@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-waste-collection',
@@ -24,7 +25,7 @@ export class WasteCollectionComponent implements OnInit {
     { id: 'electronic', name: 'Electronic Waste', icon: 'devices' }
   ];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private http: HttpClient) {}
 
   ngOnInit() {
     this.collectionForm = this.fb.group({
@@ -37,8 +38,16 @@ export class WasteCollectionComponent implements OnInit {
 
   onSubmit() {
     if (this.collectionForm.valid) {
-      console.log('Form submitted:', this.collectionForm.value);
-      // Add your form submission logic here
+      this.http.post('http://localhost:5000/api/waste-collection', this.collectionForm.value).subscribe({
+        next: (response) => {
+          console.log('Form submitted:', response);
+          this.collectionForm.reset();
+        },
+        error: (error) => {
+          console.error('Error submitting form:', error);
+          alert(`Error: ${error.message || 'An error occurred'}`);
+        }
+      });
     }
   }
 }

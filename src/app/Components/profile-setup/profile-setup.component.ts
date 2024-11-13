@@ -4,8 +4,22 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+enum ResidenceType {
+  HOUSE = 'House',
+  APARTMENT = 'Apartment',
+  CONDO = 'Condo',
+  OTHER = 'Other'
+}
+
+enum PickupTime {
+  MORNING = 'Morning',
+  AFTERNOON = 'Afternoon',
+  EVENING = 'Evening'
+}
+
 interface ProfileData {
   fullName: string;
+  username: string;
   phoneNumber: string;
   address: string;
   city: string;
@@ -33,6 +47,9 @@ export class ProfileSetupComponent implements OnInit {
     'Labuan', 'Putrajaya'
   ];
 
+  residenceTypes = Object.values(ResidenceType);
+  pickupTimes = Object.values(PickupTime);
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -41,6 +58,11 @@ export class ProfileSetupComponent implements OnInit {
   ) {
     this.profileForm = this.fb.group({
       fullName: ['', Validators.required],
+      username: ['', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.pattern('^[a-zA-Z0-9_]*$')
+      ]],
       phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,11}$')]],
       address: ['', Validators.required],
       city: ['', Validators.required],
@@ -78,9 +100,19 @@ export class ProfileSetupComponent implements OnInit {
           });
           this.router.navigate(['/dashboard']);
         },
-        error: (error: string) => {
+        error: (error: any) => {
           console.error('Profile update failed:', error);
-          this.snackBar.open('Error updating profile. Please try again.', 'Close', {
+          let errorMessage = 'Error updating profile. ';
+          
+          if (error.error?.errors) {
+            // Handle mongoose validation errors
+            const errors = error.error.errors;
+            Object.keys(errors).forEach(key => {
+              errorMessage += `${errors[key].message} `;
+            });
+          }
+          
+          this.snackBar.open(errorMessage, 'Close', {
             duration: 3000
           });
           this.loading = false;
