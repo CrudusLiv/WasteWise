@@ -1,65 +1,70 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../services/auth.service';
-import * as XLSX from 'xlsx';
+import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ReportService } from '../../services/report.service';
+
+interface Report {
+  id: string;
+  date: Date;
+  type: string;
+  data: any;
+}
 
 @Component({
   selector: 'app-reports',
-  templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.css']
+  templateUrl: './reports.component.html'
 })
-export class ReportsComponent implements OnInit {
-  feedbackReports: any[] = [];
-  pickupReports: any[] = [];
-  userId: string;
-  isLoading = false;
+export class ReportsComponent {
+  dateRange = {
+    start: new Date(),
+    end: new Date()
+  };
 
   constructor(
-    private http: HttpClient, 
-    private authService: AuthService,
+    private reportService: ReportService,
     private snackBar: MatSnackBar
-  ) {
-    this.userId = this.authService.getUserId();
+  ) {}
+
+  generateFeedbackReport(): void {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      this.reportService.generateFeedbackReport(userId, this.dateRange)
+        .subscribe({
+          next: (report: Report) => {
+            this.downloadReport(report, 'feedback_report');
+          },
+          error: (error: Error) => {
+            this.snackBar.open('Error generating feedback report', 'Close', {
+              duration: 3000
+            });
+          }
+        });
+    }
   }
 
-  ngOnInit() {
-    this.loadFeedbackReports();
-    this.loadPickupReports();
+  generateScheduleReport(): void {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      this.reportService.generateScheduleReport(userId, this.dateRange)
+        .subscribe({
+          next: (report: Report) => {
+            this.downloadReport(report, 'schedule_report');
+          },
+          error: (error: Error) => {
+            this.snackBar.open('Error generating schedule report', 'Close', {
+              duration: 3000
+            });
+          }
+        });
+    }
   }
 
-  generateFeedbackReport() {
-    const reportData = this.feedbackReports.map(feedback => ({
-      'Subject': feedback.subject,
-      'Message': feedback.message,
-      'Date Submitted': new Date(feedback.createdAt).toLocaleDateString()
-    }));
-    
-    const worksheet = XLSX.utils.json_to_sheet(reportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Feedback History');
-    XLSX.writeFile(workbook, `feedback_report_${new Date().toISOString().split('T')[0]}.xlsx`);
-    
-    this.snackBar.open('Feedback report generated successfully!', 'Close', {
-      duration: 3000
-    });
-  }
-
-  generatePickupReport() {
-    const reportData = this.pickupReports.map(pickup => ({
-      'Waste Type': pickup.wasteType,
-      'Collection Date': new Date(pickup.date).toLocaleDateString(),
-      'Status': pickup.status,
-      'Location': pickup.location
-    }));
-    
-    const worksheet = XLSX.utils.json_to_sheet(reportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Pickup History');
-    XLSX.writeFile(workbook, `pickup_report_${new Date().toISOString().split('T')[0]}.xlsx`);
-    
-    this.snackBar.open('Pickup report generated successfully!', 'Close', {
-      duration: 3000
-    });
+  private downloadReport(data: Report, filename: string): void {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${filename}_${new Date().toISOString()}.json`;
+    link.click();
+    window.URL.revokeObjectURL(url);
   }
 }

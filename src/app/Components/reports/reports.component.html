@@ -1,39 +1,28 @@
 <div class="reports-container">
-  <h1>Generate Reports</h1>
-  
-  <div class="report-cards">
-    <mat-card class="report-option">
-      <mat-card-header>
-        <mat-icon color="primary">feedback</mat-icon>
-        <mat-card-title>Feedback History Report</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>Download a detailed report of all your feedback submissions</p>
-        <p class="count">Total Feedback: {{feedbackReports.length}}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="generateFeedbackReport()" [disabled]="!feedbackReports.length">
-          <mat-icon>download</mat-icon>
-          Generate Report
-        </button>
-      </mat-card-actions>
-    </mat-card>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Generate Reports</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <mat-form-field>
+        <mat-label>Date Range</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate [(ngModel)]="dateRange.start" placeholder="Start date">
+          <input matEndDate [(ngModel)]="dateRange.end" placeholder="End date">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
 
-    <mat-card class="report-option">
-      <mat-card-header>
-        <mat-icon color="primary">local_shipping</mat-icon>
-        <mat-card-title>Pickup History Report</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>Download a complete report of your waste collection schedules</p>
-        <p class="count">Total Pickups: {{pickupReports.length}}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="generatePickupReport()" [disabled]="!pickupReports.length">
-          <mat-icon>download</mat-icon>
-          Generate Report
+      <div class="report-actions">
+        <button mat-raised-button color="primary" (click)="generateFeedbackReport()">
+          Generate Feedback Report
         </button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
+        <button mat-raised-button color="accent" (click)="generateScheduleReport()">
+          Generate Schedule Report
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>

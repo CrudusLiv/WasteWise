@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, throwError } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-waste-collection',
@@ -25,7 +27,11 @@ export class WasteCollectionComponent implements OnInit {
     { id: 'electronic', name: 'Electronic Waste', icon: 'devices' }
   ];
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {}
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit() {
     this.collectionForm = this.fb.group({
@@ -38,16 +44,34 @@ export class WasteCollectionComponent implements OnInit {
 
   onSubmit() {
     if (this.collectionForm.valid) {
-      this.http.post('http://localhost:5000/api/waste-collection', this.collectionForm.value).subscribe({
-        next: (response) => {
-          console.log('Form submitted:', response);
-          this.collectionForm.reset();
-        },
-        error: (error) => {
-          console.error('Error submitting form:', error);
-          alert(`Error: ${error.message || 'An error occurred'}`);
-        }
-      });
+      this.http.post('http://localhost:5000/waste-collection', this.collectionForm.value)
+        .pipe(
+          catchError((error: HttpErrorResponse) => {
+            let errorMessage = 'An unknown error occurred';
+            
+            if (error.error instanceof ErrorEvent) {
+              // Client-side error
+              errorMessage = `Error: ${error.error.message}`;
+            } else {
+              // Server-side error
+              errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+            }
+            
+            this.snackBar.open(errorMessage, 'Close', {
+              duration: 5000
+            });
+            
+            return throwError(() => new Error(errorMessage));
+          })
+        )
+        .subscribe({
+          next: (response) => {
+            this.snackBar.open('Waste collection submitted successfully', 'Close', {
+              duration: 3000
+            });
+            this.collectionForm.reset();
+          }
+        });
     }
   }
 }

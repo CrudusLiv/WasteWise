@@ -23,7 +23,6 @@ interface UserProfileData {
   preferredPickupTime: string;
   email: string;
 }
-
 interface ProfileUpdateResponse {
   message: string;
   user: UserProfileData;
@@ -36,6 +35,20 @@ export class AuthService {
   private apiUrl = 'http://localhost:5000/api';
 
   constructor(private http: HttpClient) {}
+
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = '';
+    if (error.error instanceof ErrorEvent) {
+      // Client-side error
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      // Server-side error
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+    
+    console.error(errorMessage);
+    return throwError(() => new Error(errorMessage));
+  }
 
   checkUsername(username: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/check-username?username=${username}`)
@@ -60,9 +73,10 @@ export class AuthService {
           profileCompleted: false
         };
         
-        return this.http.post(`${this.apiUrl}/signup`, signupData);
-      }),
-      catchError(this.handleError)
+        return this.http.post(`${this.apiUrl}/signup`, signupData).pipe(
+          catchError(this.handleError)
+        );
+      })
     );
   }
 
@@ -150,13 +164,4 @@ export class AuthService {
     return localStorage.getItem('userId'); // Replace with your actual logic
   }
 
-  private handleError(error: HttpErrorResponse) {
-    let errorMessage = 'An error occurred';
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = error.error.message;
-    } else {
-      errorMessage = error.error.message || error.statusText;
-    }
-    return throwError(() => errorMessage);
-  }
 }

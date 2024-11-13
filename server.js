@@ -1,9 +1,8 @@
 const express = require("express");
-const multer = require("multer");
-const cors = require('cors');
-const app = express();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const cors = require("cors");
+const multer = require("multer");
 const path = require("path");
 const User = require("./backend/models/user");
 const Report = require("./backend/models/report");
@@ -13,6 +12,19 @@ const reportRoutes = require("./backend/routes/report");
 const wasteCollectionRoutes = require('./backend/routes/wasteCollection');
 const WasteCollection = require('./backend/models/wasteCollection');
 const feedbackRoutes = require('./backend/routes/feedback')
+
+const app = express();
+
+// Configure CORS
+app.use(cors({
+  origin: 'http://localhost:4200', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Existing middleware
+app.use(cors());
+app.use(bodyParser.json());
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -26,8 +38,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Middleware
-app.use(bodyParser.json()); // Ensure JSON body parsing
 app.use("/uploads", express.static("uploads"));
 
 // Connect to MongoDB
@@ -45,21 +55,6 @@ mongoose
   .catch((error) => {
     console.error("Database connection failed:", error);
   });
-
-// CORS configuration
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PATCH, PUT, DELETE, OPTIONS"
-  );
-  next();
-});
-
 // Route for Signup (POST)
 app.post("/api/signup", async (req, res) => {
   try {
@@ -547,6 +542,44 @@ app.get("/api/user/:id/profile", async (req, res) => {
   } catch (error) {
     console.error("Error fetching profile:", error);
     res.status(500).json({ message: "Error fetching profile", error: error.message });
+  }
+});
+
+//Waste Collection Route
+app.post('/waste-collection', (req, res) => {
+  try {
+    // Extract waste collection data from request body
+    const { 
+      wasteType, 
+      quantity, 
+      pickupDate, 
+      userId 
+    } = req.body;
+
+    // Validate input
+    if (!wasteType || !quantity || !pickupDate || !userId) {
+      return res.status(400).json({ 
+        message: 'Missing required fields' 
+      });
+    }
+
+    // Here you would typically save to database
+    // For now, just send a success response
+    res.status(201).json({
+      message: 'Waste collection scheduled successfully',
+      data: {
+        wasteType,
+        quantity,
+        pickupDate,
+        userId
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Error scheduling waste collection', 
+      error: error.message 
+    });
   }
 });
 
