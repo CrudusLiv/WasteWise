@@ -1,6 +1,6 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const WasteCollection = require("../models/wasteCollection");
+const WasteCollection = require('../models/wasteCollection');
 
 // Get waste collection entries for a specific user
 router.get("/", async (req, res) => {
@@ -31,4 +31,30 @@ router.get("/generate-report", async (req, res) => {
   }
 });
 
-module.exports = router; 
+router.post('/schedule', async (req, res) => {
+  try {
+    const { userId, area, date, wasteType, notes } = req.body;
+    
+    const collection = new WasteCollection({
+      userId,
+      area,
+      date,
+      wasteType,
+      notes
+    });
+    
+    const savedCollection = await collection.save();
+    res.status(201).json({
+      success: true,
+      data: savedCollection
+    });
+  } catch (error) {
+    console.log('Error details:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to schedule collection',
+      error: error.message
+    });
+  }
+});
+module.exports = router;

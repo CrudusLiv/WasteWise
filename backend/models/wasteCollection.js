@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const wasteCollectionSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
   area: {
     type: String,
     required: true,
@@ -23,4 +28,4 @@ const wasteCollectionSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("WasteCollection", wasteCollectionSchema); 
+module.exports = mongoose.model("WasteCollection", wasteCollectionSchema);

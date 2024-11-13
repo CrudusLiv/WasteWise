@@ -44,34 +44,27 @@ export class WasteCollectionComponent implements OnInit {
 
   onSubmit() {
     if (this.collectionForm.valid) {
-      this.http.post('http://localhost:5000/waste-collection', this.collectionForm.value)
-        .pipe(
-          catchError((error: HttpErrorResponse) => {
-            let errorMessage = 'An unknown error occurred';
-            
-            if (error.error instanceof ErrorEvent) {
-              // Client-side error
-              errorMessage = `Error: ${error.error.message}`;
-            } else {
-              // Server-side error
-              errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-            }
-            
-            this.snackBar.open(errorMessage, 'Close', {
-              duration: 5000
-            });
-            
-            return throwError(() => new Error(errorMessage));
-          })
-        )
+      const userId = localStorage.getItem('userId');
+      const scheduleData = {
+        ...this.collectionForm.value,
+        userId
+      };
+
+      this.http.post('http://localhost:5000/api/waste-collection/schedule', scheduleData)
         .subscribe({
-          next: (response) => {
-            this.snackBar.open('Waste collection submitted successfully', 'Close', {
+          next: () => {
+            this.snackBar.open('Collection scheduled successfully!', 'Close', {
               duration: 3000
             });
             this.collectionForm.reset();
+          },
+          error: () => {
+            this.snackBar.open('Error scheduling collection', 'Close', {
+              duration: 3000
+            });
           }
         });
     }
   }
+  
 }
