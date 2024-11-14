@@ -49,10 +49,19 @@
         <mat-icon>person</mat-icon>
         <span>Profile</span>
       </a>
-      <a mat-list-item routerLink="/access" routerLinkActive="active">
-        <mat-icon>login</mat-icon>
-        <span>Login</span>
-      </a>
+      <ng-container *ngIf="!isLoggedIn(); else logoutButton">
+        <button mat-button routerLink="/access">
+          <mat-icon>login</mat-icon>
+          Login
+        </button>
+      </ng-container>
+
+      <ng-template #logoutButton>
+        <button mat-button (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          Logout
+        </button>
+      </ng-template>
       <a mat-list-item routerLink="/contact" routerLinkActive="active">
         <mat-icon>contact_page</mat-icon>
         <span>Contact</span>

@@ -11,18 +11,16 @@ export class ReportService {
   constructor(private http: HttpClient) {}
 
   generateFeedbackReport(userId: string, dateRange: {start: Date, end: Date}): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reports/feedback`, {
-      userId,
-      startDate: dateRange.start,
-      endDate: dateRange.end
-    });
+    return this.http.get(`${this.apiUrl}/reports/feedback/${userId}`, { params: {
+      startDate: dateRange.start.toISOString(),
+      endDate: dateRange.end.toISOString()
+    }});
   }
 
   generateScheduleReport(userId: string, dateRange: {start: Date, end: Date}): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reports/schedules`, {
-      userId,
-      startDate: dateRange.start,
-      endDate: dateRange.end
-    });
+    return this.http.get(`${this.apiUrl}/reports/schedules/${userId}`, { params: {
+      startDate: dateRange.start.toISOString(),
+      endDate: dateRange.end.toISOString()
+    }});
   }
 }

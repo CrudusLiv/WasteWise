@@ -1,8 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../../services/auth.service';
+
+interface UserProfile {
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+}
 
 @Component({
   selector: 'app-waste-collection',
@@ -11,13 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class WasteCollectionComponent implements OnInit {
   collectionForm!: FormGroup;
-  
-  areas = [
-    { id: 'area1', name: 'Area 1 - Downtown' },
-    { id: 'area2', name: 'Area 2 - Suburbs' },
-    { id: 'area3', name: 'Area 3 - Industrial' },
-    { id: 'area4', name: 'Area 4 - Commercial' }
-  ];
+  userAddress: string = '';
   
   wasteTypes = [
     { id: 'household', name: 'Household Waste', icon: 'home' },
@@ -30,12 +31,34 @@ export class WasteCollectionComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
+    this.loadUserProfile();
+    this.initializeForm();
+  }
+
+  loadUserProfile() {
+    this.authService.getUserProfile().subscribe({
+      next: (profile: UserProfile) => {
+        this.userAddress = `${profile.address}, ${profile.city}, ${profile.state} ${profile.postalCode}`;
+        this.collectionForm.patchValue({
+          address: this.userAddress
+        });
+      },
+      error: () => {
+        this.snackBar.open('Error loading user profile', 'Close', {
+          duration: 3000
+        });
+      }
+    });
+  }
+
+  private initializeForm() {
     this.collectionForm = this.fb.group({
-      area: ['', Validators.required],
+      address: ['', Validators.required],
       date: ['', Validators.required],
       wasteType: ['', Validators.required],
       notes: ['']
@@ -66,5 +89,4 @@ export class WasteCollectionComponent implements OnInit {
         });
     }
   }
-  
 }

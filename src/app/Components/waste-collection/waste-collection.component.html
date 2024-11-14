@@ -10,17 +10,9 @@
   
       <mat-card-content>
         <form [formGroup]="collectionForm" (ngSubmit)="onSubmit()" class="schedule-form">
-          <mat-form-field appearance="outline">
-            <mat-label>Collection Area</mat-label>
-            <mat-select formControlName="area">
-              <mat-option *ngFor="let area of areas" [value]="area.id">
-                <mat-icon>location_on</mat-icon>
-                {{area.name}}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="collectionForm.get('area')?.hasError('required')">
-              Please select an area
-            </mat-error>
+          <mat-form-field>
+            <mat-label>Address</mat-label>
+            <input matInput formControlName="address" [value]="userAddress" readonly>
           </mat-form-field>
   
           <mat-form-field appearance="outline">
