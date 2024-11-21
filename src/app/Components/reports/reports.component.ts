@@ -39,27 +39,8 @@ export class ReportsComponent implements OnInit {
       return;
     }
 
-    // Get waste collection schedules
-    this.http.get<any[]>(`http://localhost:5000/api/waste-collection/schedule`)
-      .subscribe({
-        next: (scheduleData) => {
-          const userSchedules = scheduleData.filter(schedule => schedule.userId === userId);
-          this.reports = userSchedules.map(schedule => ({
-            id: schedule._id,
-            date: new Date(schedule.date),
-            type: 'schedule',
-            data: schedule
-          }));
-          this.loading = false;
-        },
-        error: () => {
-          this.snackBar.open('Error loading schedules', 'Close', { duration: 3000 });
-          this.loading = false;
-        }
-      });
-
     // Get feedback data
-    this.http.get<any[]>(`http://localhost:5000/api/feedback`)
+    this.http.get<any[]>(`http://localhost:5000/api/feedback/user/${userId}`)
       .subscribe({
         next: (feedbackData) => {
           const userFeedback = feedbackData.filter(feedback => feedback.userId === userId);
@@ -67,7 +48,13 @@ export class ReportsComponent implements OnInit {
             id: feedback._id,
             date: new Date(feedback.createdAt),
             type: 'feedback',
-            data: feedback
+            data: {
+              fullName: feedback.fullName,
+              email: feedback.email,
+              subject: feedback.subject,
+              message: feedback.message,
+              createdAt: feedback.createdAt
+            }
           }));
           this.reports = [...this.reports, ...feedbackReports];
         },
@@ -75,38 +62,89 @@ export class ReportsComponent implements OnInit {
           this.snackBar.open('Error loading feedback', 'Close', { duration: 3000 });
         }
       });
-  }  generateFeedbackReport(): void {
+  }
+
+  private loadWasteCollectionData(userId: string): void {
+    this.http.get<any[]>(`http://localhost:5000/api/waste-collection`)
+      .subscribe({
+        next: (scheduleData) => {
+          const userSchedules = scheduleData.filter(schedule => schedule.userId === userId);
+          const scheduleReports = userSchedules.map(schedule => ({
+            id: schedule._id,
+            date: new Date(schedule.date),
+            type: 'schedule',
+            data: schedule
+          }));
+          this.reports = [...this.reports, ...scheduleReports];
+          this.loading = false;
+        },
+        error: () => {
+          this.snackBar.open('Error loading schedules', 'Close', { duration: 3000 });
+          this.loading = false;
+        }
+      });
+  }
+
+  generateFeedbackReport(): void {
     const userId = localStorage.getItem('userId');
-    if (userId) {
-      this.loading = true;
-      const feedbackReport = this.reports.filter(report => report.type === 'feedback');
-      this.downloadReport({ 
-        id: 'feedback_report',
-        date: new Date(),
-        type: 'feedback_report',
-        data: feedbackReport
-      }, 'feedback_report');
-      this.loading = false;
-    }
+    if (!userId) return;
+    
+    this.loading = true;
+    const feedbackReport: Report = {
+      id: 'feedback_' + new Date().getTime(),
+      date: new Date(),
+      type: 'feedback_report',
+      data: {
+        feedbacks: this.reports
+          .filter((report: Report) => report.type === 'feedback')
+          .map(report => ({
+            submissionDate: this.getFormattedDate(new Date(report.date)),
+            fullName: report.data.fullName,
+            email: report.data.email,
+            subject: report.data.subject,
+            message: report.data.message
+          }))
+      }
+    };
+  
+    this.downloadReport(feedbackReport, 'feedback_report');
+    this.loading = false;
   }
 
   generateScheduleReport(): void {
     const userId = localStorage.getItem('userId');
-    if (userId) {
-      this.loading = true;
-      const scheduleReport = this.reports.filter(report => report.type === 'schedule');
-      this.downloadReport({
-        id: 'schedule_report',
-        date: new Date(),
-        type: 'schedule_report',
-        data: scheduleReport
-      }, 'schedule_report');
-      this.loading = false;
-    }
+    if (!userId) return;
+
+    this.loading = true;
+    const scheduleData = this.reports
+      .filter((report: Report) => report.type === 'schedule')
+      .map(report => ({
+        date: new Date(report.date).toLocaleDateString(),
+        wasteType: report.data.wasteType,
+        area: report.data.area,
+        notes: report.data.notes || 'No notes provided',
+        status: report.data.status || 'Scheduled'
+      }));
+
+    const reportContent: Report = {
+      id: 'schedule_' + new Date().getTime(),
+      type: 'Schedule Report',
+      date: new Date(),
+      data: scheduleData
+    };
+
+    this.downloadReport(reportContent, 'schedule_report');
+    this.loading = false;
   }
 
   private downloadReport(data: Report, filename: string): void {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const reportContent = {
+      reportType: data.type,
+      generatedOn: this.getFormattedDate(new Date()),
+      details: data.data
+    };
+
+    const blob = new Blob([JSON.stringify(reportContent, null, 2)], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;

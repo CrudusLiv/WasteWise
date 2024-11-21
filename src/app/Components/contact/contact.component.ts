@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-contact',
@@ -14,42 +15,42 @@ export class ContactComponent {
   message: string = '';
   userId: string = '';
 
-  constructor(private http: HttpClient, private authService: AuthService) {
-    this.userId = this.authService.getUserId(); // Get the user ID from AuthService
+  constructor(
+    private http: HttpClient, 
+    private authService: AuthService,
+    private snackBar: MatSnackBar
+  ) {
+    this.userId = this.authService.getUserId();
   }
 
   submitFeedback(): void {
-    const userId = this.authService.getCurrentUserId();
+    const userId = localStorage.getItem('userId');
 
     if (!userId) {
-      console.error('User is not logged in');
+      this.snackBar.open('Please log in to submit feedback', 'Close', { duration: 3000 });
       return;
     }
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-
     const feedbackData = {
-      userId: userId,
+      userId: userId,  // This will be a valid MongoDB ObjectId from localStorage
       fullName: this.fullName,
       email: this.email,
       subject: this.subject,
       message: this.message
     };
 
-    this.http.post('http://localhost:5000/api/feedback', feedbackData, { headers })
+    this.http.post('http://localhost:5000/api/feedback', feedbackData)
       .subscribe({
         next: (response) => {
-          console.log('Feedback submitted successfully', response);
+          this.snackBar.open('Feedback submitted successfully', 'Close', { duration: 3000 });
           this.clearForm();
         },
         error: (error) => {
-          console.error('Error submitting feedback:', error);
+          console.log('Feedback Data:', feedbackData);
+          this.snackBar.open('Error submitting feedback', 'Close', { duration: 3000 });
         }
       });
   }
-
   clearForm(): void {
     this.fullName = '';
     this.email = '';

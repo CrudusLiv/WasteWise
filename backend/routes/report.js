@@ -2,7 +2,18 @@ const express = require("express");
 const router = express.Router();
 const Report = require("../models/report");
 
-// Get all reports
+// Add this new route handler
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const reports = await Report.find({ userId: userId });
+    res.json(reports);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user reports" });
+  }
+});
+
+// Keep existing routes
 router.get("/", async (req, res) => {
   try {
     const reports = await Report.find();
@@ -12,7 +23,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Add these new route handlers
 router.get("/feedback", async (req, res) => {
   try {
     const feedbackReports = await Report.find({ type: 'feedback' });
@@ -31,4 +41,4 @@ router.get("/pickup", async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;

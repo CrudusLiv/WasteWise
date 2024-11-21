@@ -20,7 +20,7 @@ import { PickupHistoryComponent } from './Components/pickup-history/pickup-histo
 import { MaterialModule } from './material/material.module';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ProfileSetupComponent } from './Components/profile-setup/profile-setup.component';
-
+import { AuthGuard } from './guards/auth.guard';
 @NgModule({
   declarations: [
     AppComponent,
@@ -47,6 +47,7 @@ import { ProfileSetupComponent } from './Components/profile-setup/profile-setup.
     FormsModule
   ],
   providers: [
+    AuthGuard,
     provideAnimationsAsync(),
     provideHttpClient(withInterceptorsFromDi())
   ],

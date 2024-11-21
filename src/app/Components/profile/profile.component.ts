@@ -72,15 +72,13 @@ export class ProfileComponent implements OnInit {
       next: (profileData) => {
         this.user = {
           ...profileData,
-          username: profileData.username || '',
+          username: profileData.username || localStorage.getItem('username') || '',
           email: localStorage.getItem('userEmail') || ''
         };
         this.loading = false;
       },
       error: (error) => {
-        this.snackBar.open('Error loading profile. Please try again.', 'Close', {
-          duration: 3000
-        });
+        this.snackBar.open('Error loading profile', 'Close', { duration: 3000 });
         this.loading = false;
       }
     });

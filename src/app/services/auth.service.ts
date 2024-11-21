@@ -7,6 +7,7 @@ interface LoginResponse {
   userId: string;
   lastLogin: string;
   profileCompleted: boolean;
+  username: string;  // Add this line
   message: string;
 }
 
@@ -90,6 +91,7 @@ export class AuthService {
           localStorage.setItem('userId', response.userId);
           localStorage.setItem('lastLogin', response.lastLogin);
           localStorage.setItem('profileCompleted', String(response.profileCompleted));
+          localStorage.setItem('username', response.username); // Add this line
         }),
         catchError(this.handleError)
       );

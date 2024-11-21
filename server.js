@@ -104,23 +104,15 @@ app.post("/api/login", async (req, res) => {
     }
 
     const malaysiaTime = new Date(Date.now() + 8 * 60 * 60 * 1000);
-
-    // Update lastLogin timestamp
     user.lastLogin = malaysiaTime;
     await user.save();
-
-    // Store login activity
-    const userActivity = new UserActivity({
-      username: user.username,
-      email: user.email,
-      lastLogin: malaysiaTime,
-    });
-    await userActivity.save();
 
     res.status(200).json({
       message: "Login successful",
       userId: user._id,
+      username: user.username,  // Add this line
       lastLogin: user.lastLogin,
+      profileCompleted: user.profileCompleted
     });
   } catch (error) {
     res.status(500).json({ message: "Login failed", error });
@@ -589,3 +581,17 @@ app.use("/api/feedback", feedbackRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+
+// Move this near the top with other route imports
+const userRoutes = require('./backend/routes/users');
+
+// Add admin check middleware
+app.use((req, res, next) => {
+  if (req.path.includes('/admin') && !req.user?.isAdmin) {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+});
+
+// Move this line after all middleware declarations but before starting the server
+app.use('/api/users', userRoutes);

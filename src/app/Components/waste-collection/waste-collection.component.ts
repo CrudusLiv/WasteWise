@@ -64,29 +64,37 @@ export class WasteCollectionComponent implements OnInit {
       notes: ['']
     });
   }
+    onSubmit() {
+      if (this.collectionForm.valid) {
+        const userId = localStorage.getItem('userId');
+        const collectionData = {
+          userId: userId,
+          area: this.collectionForm.value.address,
+          date: this.collectionForm.value.date,
+          wasteType: this.collectionForm.value.wasteType,
+          notes: this.collectionForm.value.notes || ''
+        };
 
-  onSubmit() {
-    if (this.collectionForm.valid) {
-      const userId = localStorage.getItem('userId');
-      const scheduleData = {
-        ...this.collectionForm.value,
-        userId
-      };
+        const headers = {
+          'Authorization': userId || '',
+          'Content-Type': 'application/json'
+        };
 
-      this.http.post('http://localhost:5000/api/waste-collection/schedule', scheduleData)
-        .subscribe({
-          next: () => {
-            this.snackBar.open('Collection scheduled successfully!', 'Close', {
-              duration: 3000
-            });
-            this.collectionForm.reset();
-          },
-          error: () => {
-            this.snackBar.open('Error scheduling collection', 'Close', {
-              duration: 3000
-            });
-          }
-        });
+        this.http.post('http://localhost:5000/api/waste-collection/schedule', collectionData, { headers })
+          .subscribe({
+            next: (response) => {
+              this.snackBar.open('Collection scheduled successfully', 'Close', {
+                duration: 3000
+              });
+              this.collectionForm.reset();
+            },
+            error: (error) => {
+              console.error('Error:', error);
+              this.snackBar.open('Failed to schedule collection', 'Close', {
+                duration: 3000
+              });
+            }
+          });
+      }
     }
   }
-}
