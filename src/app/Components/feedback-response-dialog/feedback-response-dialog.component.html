@@ -1,0 +1,24 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>{{data.feedback.response ? 'Edit Response' : 'Respond to Feedback'}}</h2>
+  
+  <div class="feedback-details">
+    <h3>Original Feedback</h3>
+    <p class="subject">{{data.feedback.subject}}</p>
+    <p class="message">{{data.feedback.message}}</p>
+    <div class="rating">Rating: {{data.feedback.rating}}/5</div>
+  </div>
+
+  <mat-dialog-content>
+    <mat-form-field appearance="fill" class="response-field">
+      <mat-label>Your Response</mat-label>
+      <textarea matInput [(ngModel)]="response" rows="4" placeholder="Type your response here..."></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="dialogRef.close()">Cancel</button>
+    <button mat-raised-button color="primary" [mat-dialog-close]="response">
+      {{data.feedback.response ? 'Update' : 'Send'}}
+    </button>
+  </mat-dialog-actions>
+</div>

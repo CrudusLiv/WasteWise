@@ -23,10 +23,6 @@
         <mat-icon>dashboard</mat-icon>
         <span>Dashboard</span>
       </a>
-      <a mat-list-item routerLink="/waste-collection" routerLinkActive="active">
-        <mat-icon>local_shipping</mat-icon>
-        <span>Waste Collection</span>
-      </a>
       <a mat-list-item routerLink="/recycling" routerLinkActive="active">
         <mat-icon>recycling</mat-icon>
         <span>Recycling</span>
@@ -36,31 +32,39 @@
         <span>Disposal</span>
       </a>
       <mat-divider></mat-divider>
+      <a mat-list-item routerLink="/waste-collection" routerLinkActive="active">
+        <mat-icon>local_shipping</mat-icon>
+        <span>Waste Collection</span>
+      </a>
+      <a mat-list-item routerLink="/pickup-history" routerLinkActive="active">
+        <mat-icon>local_shipping</mat-icon>
+        <span>Pickup History</span>
+      </a>
       <a mat-list-item routerLink="/reports" routerLinkActive="active">
         <mat-icon>assessment</mat-icon>
         <span>Reports</span>
-      </a>
-      <a mat-list-item routerLink="/admin" routerLinkActive="active">
-        <mat-icon>settings</mat-icon>
-        <span>Admin Dashboard</span>
       </a>
       <mat-divider></mat-divider>
       <a mat-list-item routerLink="/profile" routerLinkActive="active">
         <mat-icon>person</mat-icon>
         <span>Profile</span>
       </a>
+      <a mat-list-item routerLink="/admin" routerLinkActive="active" *ngIf="isAdmin">
+        <mat-icon>settings</mat-icon>
+        <span>Admin Dashboard</span>
+      </a>
+      <mat-divider></mat-divider>
       <ng-container *ngIf="!isLoggedIn(); else logoutButton">
-        <button mat-button routerLink="/access">
+        <a mat-list-item routerLink="/access">
           <mat-icon>login</mat-icon>
-          Login
-        </button>
+          <span>Login</span>
+        </a>
       </ng-container>
-
       <ng-template #logoutButton>
-        <button mat-button (click)="logout()">
+        <a mat-list-item (click)="logout()">
           <mat-icon>logout</mat-icon>
-          Logout
-        </button>
+          <span>Logout</span>
+        </a>
       </ng-template>
       <a mat-list-item routerLink="/contact" routerLinkActive="active">
         <mat-icon>contact_page</mat-icon>

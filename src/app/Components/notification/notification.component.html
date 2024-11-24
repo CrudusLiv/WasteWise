@@ -1,39 +1,41 @@
 <div class="notification-container">
   <div class="notification-header">
     <h2>Notifications</h2>
-    <mat-icon>notifications</mat-icon>
+    <div class="notification-actions">
+      <button mat-raised-button color="primary" (click)="markAllAsRead()">
+        <mat-icon>done_all</mat-icon>
+        Mark All Read
+      </button>
+      <button mat-raised-button color="warn" (click)="deleteAllNotifications()">
+        <mat-icon>delete_sweep</mat-icon>
+        Clear All
+      </button>
+    </div>
   </div>
 
-  <div class="notification-content">
-    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
-
-    <div *ngIf="!loading && notifications.length === 0" class="no-notifications">
-      <mat-icon>notifications_off</mat-icon>
-      <p>No notifications available</p>
-    </div>
-
+  <div class="notification-list">
     <mat-card *ngFor="let notification of notifications" 
-              [ngClass]="{'unread': notification.status === 'unread'}"
+              [class.unread]="notification.status === 'unread'"
               class="notification-card">
-      <mat-card-header>
-        <mat-card-title>{{ notification.title }}</mat-card-title>
-        <mat-card-subtitle>
-          From: {{ notification.adminId.username }}
-          <span class="notification-date">
-            {{ notification.createdAt | date:'medium' }}
-          </span>
-        </mat-card-subtitle>
-      </mat-card-header>
-      
       <mat-card-content>
-        <p>{{ notification.message }}</p>
+        <div class="notification-content">
+          <div class="notification-icon">
+            <mat-icon [class.unread-icon]="notification.status === 'unread'">
+              {{notification.status === 'unread' ? 'mark_email_unread' : 'mark_email_read'}}
+            </mat-icon>
+          </div>
+          <div class="notification-details">
+            <h3>{{notification.title}}</h3>
+            <p>{{notification.message}}</p>
+            <span class="notification-time">{{notification.createdAt | date:'medium'}}</span>
+          </div>
+          <div class="notification-actions">
+            <button mat-icon-button color="warn" (click)="deleteNotification(notification._id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
       </mat-card-content>
-      
-      <mat-card-actions *ngIf="notification.status === 'unread'">
-        <button mat-button color="primary" (click)="markAsRead(notification._id)">
-          Mark as Read
-        </button>
-      </mat-card-actions>
     </mat-card>
   </div>
 </div>

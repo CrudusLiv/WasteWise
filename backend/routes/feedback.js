@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Feedback = require('../models/feedback');
 const mongoose = require('mongoose');
+const Notification = require('../models/notification');
+
 
 router.post('/', async (req, res) => {
   try {
@@ -45,3 +47,43 @@ router.get('/user/:userId', async (req, res) => {
 });
 
 module.exports = router;
+
+router.get('/', async (req, res) => {
+  try {
+    const feedback = await Feedback.find().sort({ createdAt: -1 });
+    res.status(200).json(feedback);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching feedback', error: error.message });
+  }
+});
+
+router.post('/:id/respond', async (req, res) => {
+  try {
+    const feedback = await Feedback.findById(req.params.id);
+    if (!feedback) {
+      return res.status(404).json({ message: 'Feedback not found' });
+    }
+
+    feedback.response = {
+      response: req.body.response,
+      respondedAt: new Date()
+    };
+
+    await feedback.save();
+
+    // Create notification for the user
+    const notification = new Notification({
+      userId: feedback.userId,
+      title: 'Feedback Response',
+      message: 'Your feedback has received a response',
+      status: 'unread'
+    });
+    await notification.save();
+
+    res.json(feedback);
+  } catch (error) {
+    console.error('Error responding to feedback:', error);
+    res.status(500).json({ message: 'Error updating feedback response' });
+  }
+});
+

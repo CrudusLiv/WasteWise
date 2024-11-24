@@ -4,6 +4,8 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { NotificationComponent } from '../notification/notification.component';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService } from '../../services/auth.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-navigation',
@@ -12,6 +14,7 @@ import { filter } from 'rxjs/operators';
 })
 export class NavigationComponent {
   isMenuOpen = false;
+  isAdmin = false;
   appTitle = 'WasteWise';
   @ViewChild('sidenav') sidenav!: MatSidenav;
 
@@ -24,6 +27,7 @@ export class NavigationComponent {
   constructor(
     private dialog: MatDialog,
     private router: Router,
+    private http: HttpClient,
     private authService: AuthService
   ) {
     // Subscribe to router events to close menu on navigation
@@ -32,6 +36,7 @@ export class NavigationComponent {
     ).subscribe(() => {
       this.closeMenu();
     });
+    this.checkAdminStatus();
   }
 
   toggleMenu() {
@@ -82,4 +87,20 @@ export class NavigationComponent {
     };
     this.notifications.unshift(notification);
   }
-}import { AuthService } from '../../services/auth.service';
+
+  private checkAdminStatus() {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      this.http.get<any>(`http://localhost:5000/api/user/${userId}`).subscribe({
+        next: (user) => {
+          this.isAdmin = user.isAdmin;
+        },
+        error: () => {
+          this.isAdmin = false;
+        }
+      });
+    }
+  }
+}
+
+

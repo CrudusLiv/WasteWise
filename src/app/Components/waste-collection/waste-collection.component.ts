@@ -75,24 +75,19 @@ export class WasteCollectionComponent implements OnInit {
           notes: this.collectionForm.value.notes || ''
         };
 
-        const headers = {
-          'Authorization': userId || '',
-          'Content-Type': 'application/json'
-        };
-
-        this.http.post('http://localhost:5000/api/waste-collection/schedule', collectionData, { headers })
+        this.http.post('http://localhost:5000/api/waste-collection/schedule', collectionData)
           .subscribe({
             next: (response) => {
-              this.snackBar.open('Collection scheduled successfully', 'Close', {
-                duration: 3000
+              this.snackBar.open('Collection scheduled successfully', 'Close', { duration: 3000 });
+              this.authService.emitCollectionEvent({
+                date: this.collectionForm.value.date,
+                time: new Date().toLocaleTimeString()
               });
               this.collectionForm.reset();
             },
             error: (error) => {
               console.error('Error:', error);
-              this.snackBar.open('Failed to schedule collection', 'Close', {
-                duration: 3000
-              });
+              this.snackBar.open('Failed to schedule collection', 'Close', { duration: 3000 });
             }
           });
       }

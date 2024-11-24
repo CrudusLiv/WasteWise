@@ -67,6 +67,7 @@ export class AccessComponent implements OnInit {
           
           this.authService.login(loginData).subscribe({
             next: (loginResponse) => {
+              this.authService.emitSignupEvent(); // Add this line
               this.snackBar.open('Registration successful! Please complete your profile.', 'Close', { 
                 duration: 3000 
               });
@@ -87,7 +88,6 @@ export class AccessComponent implements OnInit {
       });
     }
   }
-
   getErrorMessage(controlName: string, formType: 'login' | 'signup'): string {
     const form = formType === 'login' ? this.loginForm : this.signupForm;
     const control = form.get(controlName);

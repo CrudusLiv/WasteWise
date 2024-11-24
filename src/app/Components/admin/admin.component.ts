@@ -1,7 +1,45 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { FeedbackResponseDialogComponent } from '../feedback-response-dialog/feedback-response-dialog.component';
+
+interface User {
+  _id: string;
+  username: string;
+  email: string;
+  profile: {
+    fullName: string;
+    phoneNumber: string;
+    address: string;
+  };
+  isActive: boolean;
+  role: string;
+  lastLogin: Date;
+}
+
+interface Feedback {
+  _id: string;
+  userId: string;
+  message: string;
+  rating: number;
+  createdAt: Date;
+  subject: string;  // Added subject property
+  response?: {
+    response: string;
+  };
+}
+
+interface Schedule {
+  _id: string;
+  userId: string;
+  date: Date;
+  time: string;
+  status: string;
+  wasteType: string;
+  area: string;  // Added area property
+}
 
 @Component({
   selector: 'app-admin',
@@ -9,96 +47,239 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./admin.component.css']
 })
 export class AdminComponent implements OnInit {
-  users: any[] = [];
-  feedback: any[] = [];
-  schedules: any[] = [];
+  users: User[] = [];
+  feedback: Feedback[] = [];
+  schedules: Schedule[] = [];
   loading = false;
+  showUserList = true;
+  selectedUserId: string = '';
+  displayedUserColumns: string[] = ['username', 'email', 'role', 'lastLogin', 'status', 'actions'];
+  selectedUser: User | null = null;
+  roles: string[] = ['user', 'admin', 'moderator'];
+  private readonly apiUrl = 'http://localhost:5000/api';
 
   constructor(
     private http: HttpClient,
-    private router: Router,
-    private snackBar: MatSnackBar
+    private authService: AuthService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog  // Add this line
   ) {}
 
   ngOnInit() {
-    this.checkAdminAccess();
     this.loadAllData();
-  }
-
-  private checkAdminAccess() {
-    const userId = localStorage.getItem('userId');
-    this.http.get<any>(`http://localhost:5000/api/user/${userId}`).subscribe({
-      next: (user) => {
-        if (!user.isAdmin) {
-          this.router.navigate(['/']);
-          this.snackBar.open('Access denied: Admin privileges required', 'Close', { duration: 3000 });
-        }
-      },
-      error: () => this.router.navigate(['/'])
-    });
   }
 
   private loadAllData() {
     this.loading = true;
     this.loadUsers();
+    this.loading = false;
+  }
+
+  private loadUsers() {
+    const headers = new HttpHeaders().set(
+      'Authorization', 'Bearer ' + this.authService.getAuthToken()
+    );
+    
+    this.http.get<User[]>(`${this.apiUrl}/users`, { headers })
+      .subscribe({
+        next: (data) => this.users = data,
+        error: (error) => this.handleError('loading users', error)
+      });
+  }
+
+  private loadFeedback() {
+    if (!this.selectedUserId) return;
+    
+    const headers = this.getAuthHeaders();
+    this.http.get<Feedback[]>(`${this.apiUrl}/feedback/user/${this.selectedUserId}`, { headers })
+      .subscribe({
+        next: (data) => this.feedback = data,
+        error: (error) => this.handleError('loading feedback', error)
+      });
+  }
+
+  private loadSchedules() {
+    if (!this.selectedUserId) return;
+    
+    const headers = this.getAuthHeaders();
+    this.http.get<Schedule[]>(`${this.apiUrl}/waste-collection?userId=${this.selectedUserId}`, { headers })
+      .subscribe({
+        next: (data) => this.schedules = data,
+        error: (error) => this.handleError('loading schedules', error)
+      });
+  }
+
+  updateUserStatus(userId: string, isActive: boolean) {
+    const headers = new HttpHeaders().set(
+      'Authorization', 'Bearer ' + this.authService.getAuthToken()
+    );
+
+    this.http.patch(`${this.apiUrl}/users/${userId}/status`, { isActive }, { headers })
+      .subscribe({
+        next: () => {
+          this.loadUsers();
+          this.showSuccess('User status updated successfully');
+        },
+        error: (error) => this.handleError('updating user status', error)
+      });
+  }
+  
+  respondToFeedback(feedbackId: string, response: string): void {
+    const headers = this.getAuthHeaders();
+    this.http.post(`${this.apiUrl}/feedback/${feedbackId}/respond`, { response }, { headers })
+      .subscribe({
+        next: () => {
+          this.showSuccess('Response sent successfully');
+          this.loadFeedback();
+        },
+        error: (error: any) => this.handleError('responding to feedback', error)
+      });
+  }
+  
+  
+
+  updateScheduleStatus(scheduleId: string, status: 'completed' | 'dropped'): void {
+    const headers = this.getAuthHeaders();
+    this.http.patch(`${this.apiUrl}/waste-collection/${scheduleId}`, { status }, { headers })
+      .subscribe({
+        next: () => {
+          this.showSuccess(`Schedule marked as ${status}`);
+          this.loadSchedules();
+        },
+        error: (error: any) => this.handleError('updating schedule status', error)
+      });
+  }
+
+  deleteSchedule(scheduleId: string): void {
+    const headers = this.getAuthHeaders();
+    this.http.delete(`${this.apiUrl}/waste-collection/${scheduleId}`, { headers })
+      .subscribe({
+        next: () => {
+          this.showSuccess('Schedule deleted successfully');
+          this.loadSchedules();
+        },
+        error: (error: any) => this.handleError('deleting schedule', error)
+      });
+  }
+  deleteFeedback(feedbackId: string) {
+    const headers = new HttpHeaders().set(
+      'Authorization', 'Bearer ' + this.authService.getAuthToken()
+    );
+
+    this.http.delete(`${this.apiUrl}/feedback/${feedbackId}`, { headers })
+      .subscribe({
+        next: () => {
+          this.loadFeedback();
+          this.showSuccess('Feedback deleted successfully');
+        },
+        error: (error) => this.handleError('deleting feedback', error)
+      });
+  }
+
+  onUserSelect(user: User) {
+    this.selectedUser = user;
+    this.selectedUserId = user._id;
+    this.showUserList = false;
+    this.loadUserData();
+  }
+
+  loadUserData() {
+    this.loading = true;
     this.loadFeedback();
     this.loadSchedules();
     this.loading = false;
   }
 
-  private loadUsers() {
-    this.http.get<any[]>('http://localhost:5000/api/users').subscribe({
-      next: (data) => this.users = data,
-      error: (error) => this.handleError('loading users', error)
-    });
+  backToUsers() {
+    this.showUserList = true;
+    this.selectedUser = null;
+    this.feedback = [];
+    this.schedules = [];
   }
 
-  private loadFeedback() {
-    this.http.get<any[]>('http://localhost:5000/api/feedback').subscribe({
-      next: (data) => this.feedback = data,
-      error: (error) => this.handleError('loading feedback', error)
-    });
-  }
-
-  private loadSchedules() {
-    this.http.get<any[]>('http://localhost:5000/api/waste-collection').subscribe({
-      next: (data) => this.schedules = data,
-      error: (error) => this.handleError('loading schedules', error)
-    });
-  }
-
-  updateUserStatus(userId: string, isActive: boolean) {
-    this.http.patch(`http://localhost:5000/api/user/${userId}/status`, { isActive }).subscribe({
-      next: () => {
-        this.loadUsers();
-        this.snackBar.open('User status updated successfully', 'Close', { duration: 3000 });
-      },
-      error: (error) => this.handleError('updating user status', error)
-    });
-  }
-
-  updateScheduleStatus(scheduleId: string, status: string) {
-    this.http.patch(`http://localhost:5000/api/waste-collection/${scheduleId}`, { status }).subscribe({
-      next: () => {
-        this.loadSchedules();
-        this.snackBar.open('Schedule status updated successfully', 'Close', { duration: 3000 });
-      },
-      error: (error) => this.handleError('updating schedule status', error)
-    });
-  }
-
-  deleteFeedback(feedbackId: string) {
-    this.http.delete(`http://localhost:5000/api/feedback/${feedbackId}`).subscribe({
-      next: () => {
-        this.loadFeedback();
-        this.snackBar.open('Feedback deleted successfully', 'Close', { duration: 3000 });
-      },
-      error: (error) => this.handleError('deleting feedback', error)
-    });
+  private showSuccess(message: string) {
+    this.snackBar.open(message, 'Close', { duration: 3000 });
   }
 
   private handleError(action: string, error: any) {
     console.error(`Error ${action}:`, error);
-    this.snackBar.open(`Error ${action}`, 'Close', { duration: 3000 });
+    this.snackBar.open(`Error ${action}. Please try again.`, 'Close', { duration: 3000 });
   }
+
+  editUser(user: User) {
+    this.selectedUser = {...user};
+  }
+
+  saveUserChanges(user: User) {
+    const headers = new HttpHeaders().set(
+      'Authorization', 'Bearer ' + this.authService.getAuthToken()
+    );
+
+    this.http.put(`${this.apiUrl}/users/${user._id}`, user, { headers })
+      .subscribe({
+        next: () => {
+          this.loadUsers();
+          this.selectedUser = null;
+          this.showSuccess('User updated successfully');
+        },
+        error: (error) => this.handleError('updating user', error)
+      });
+  }
+
+  deleteUser(userId: string) {
+    const headers = new HttpHeaders().set(
+      'Authorization', 'Bearer ' + this.authService.getAuthToken()
+    );
+
+    this.http.delete(`${this.apiUrl}/users/${userId}`, { headers })
+      .subscribe({
+        next: () => {
+          this.loadUsers();
+          this.showSuccess('User deleted successfully');
+        },
+        error: (error) => this.handleError('deleting user', error)
+      });
+  }
+  
+  private getAuthHeaders(): HttpHeaders {
+    return new HttpHeaders().set(
+      'Authorization', 'Bearer ' + this.authService.getAuthToken()
+    );
+  }
+
+  openResponseDialog(feedback: Feedback): void {
+    const dialogRef = this.dialog.open(FeedbackResponseDialogComponent, {
+      width: '500px',
+      data: {
+        feedback,
+        existingResponse: feedback.response?.response || ''
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((response: string) => {
+      if (response) {
+        if (feedback.response) {
+          this.editFeedbackResponse(feedback._id, response);
+        } else {
+          this.respondToFeedback(feedback._id, response);
+        }
+      }
+    });
+  }
+
+// Add this method to your AdminComponent class
+editFeedbackResponse(feedbackId: string, newResponse: string): void {
+  const headers = this.getAuthHeaders();
+  
+  this.http.put(`${this.apiUrl}/feedback/${feedbackId}/respond`, 
+    { response: newResponse }, 
+    { headers }
+  ).subscribe({
+    next: () => {
+      this.showSuccess('Response updated successfully');
+      this.loadFeedback();
+    },
+    error: (error: any) => this.handleError('updating feedback response', error)
+  });
+}
 }

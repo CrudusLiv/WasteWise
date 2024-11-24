@@ -2,6 +2,15 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 
+router.get('/', async (req, res) => {
+  try {
+    const users = await User.find({}, '-password'); // Exclude password field
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching users', error: error.message });
+  }
+});
+
 // Middleware to check authentication
 const checkAuth = async (req, res, next) => {
   const userId = req.headers.authorization;
@@ -44,7 +53,6 @@ router.get('/profile', checkAuth, async (req, res) => {
 });
 
 module.exports = router;
-
 // Add admin check middleware
 const checkAdmin = async (req, res, next) => {
   try {

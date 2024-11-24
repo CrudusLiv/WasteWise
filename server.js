@@ -17,8 +17,8 @@ const app = express();
 
 // Configure CORS
 app.use(cors({
-  origin: 'http://localhost:4200', 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: 'http://localhost:4200',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
@@ -42,13 +42,7 @@ app.use("/uploads", express.static("uploads"));
 
 // Connect to MongoDB
 mongoose
-  .connect(
-    "mongodb+srv://CrudusLiv:pNqd4eHjHkWkMNND@cluster0.n2yin.mongodb.net/WasteWise?retryWrites=true&w=majority&appName=Cluster0",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    }
-  )
+  .connect("mongodb+srv://CrudusLiv:pNqd4eHjHkWkMNND@cluster0.n2yin.mongodb.net/WasteWise?retryWrites=true&w=majority&appName=Cluster0")
   .then(() => {
     console.log("Connected to WasteWise database");
   })
@@ -355,16 +349,16 @@ app.get("/api/pickup-statistics", async (req, res) => {
 // Update notification endpoints
 app.post("/api/notifications", async (req, res) => {
   try {
-    const { title, message, adminId } = req.body;
+    const { title, message, userId } = req.body;
     
-    if (!title || !message || !adminId) {
+    if (!title || !message || !userId) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     const notification = new Notification({
       title,
       message,
-      adminId,
+      userId,
       status: 'unread'
     });
 
@@ -375,12 +369,12 @@ app.post("/api/notifications", async (req, res) => {
     res.status(500).json({ message: "Error creating notification" });
   }
 });
-
 app.get("/api/notifications", async (req, res) => {
   try {
     const notifications = await Notification.find()
-      .populate('adminId', 'username')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .populate('userId', 'username');
+      
     res.status(200).json(notifications);
   } catch (error) {
     console.error('Error fetching notifications:', error);
@@ -595,3 +589,100 @@ app.use((req, res, next) => {
 
 // Move this line after all middleware declarations but before starting the server
 app.use('/api/users', userRoutes);
+
+
+
+// Add these routes after other existing routes
+app.post('/api/notifications', async (req, res) => {
+  try {
+    const notification = new Notification(req.body);
+    await notification.save();
+    res.status(201).json(notification);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating notification' });
+  }
+});
+
+app.get('/api/notifications', async (req, res) => {
+  try {
+    const notifications = await Notification.find()
+      .sort({ createdAt: -1 })
+      .populate('adminId', 'username');
+    res.json(notifications);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching notifications' });
+  }
+});
+
+app.patch('/api/notifications/:id', async (req, res) => {
+  try {
+    const notification = await Notification.findByIdAndUpdate(
+      req.params.id,
+      { status: req.body.status },
+      { new: true }
+    );
+    res.json(notification);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating notification' });
+  }
+});
+
+
+// Create a separate route specifically for marking all as read
+app.patch("/api/notifications-mark-all-read", async (req, res) => {
+  try {
+    const result = await Notification.updateMany(
+      { status: 'unread' },
+      { $set: { status: 'read' } }
+    );
+    
+    res.status(200).json({
+      message: 'All notifications marked as read',
+      modifiedCount: result.modifiedCount
+    });
+  } catch (error) {
+    console.error('Error marking notifications as read:', error);
+    res.status(500).json({ message: 'Error updating notifications' });
+  }
+});
+// Delete all notifications
+app.delete("/api/notifications", async (req, res) => {
+  try {
+    await Notification.deleteMany({});
+    res.status(200).json({ message: 'All notifications deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting notifications' });
+  }
+});
+
+// Delete single notification
+app.delete("/api/notifications/:id", async (req, res) => {
+  try {
+    await Notification.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: 'Notification deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting notification' });
+  }
+});
+
+// Add this route to handle feedback responses
+app.post('/api/feedback/:id/respond', async (req, res) => {
+  try {
+    const feedbackId = req.params.id;
+    const { response } = req.body;
+    
+    const feedback = await Feedback.findByIdAndUpdate(
+      feedbackId,
+      { $set: { response: { response } } },
+      { new: true }
+    );
+
+    if (!feedback) {
+      return res.status(404).json({ message: 'Feedback not found' });
+    }
+
+    res.status(200).json(feedback);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating feedback response' });
+  }
+});

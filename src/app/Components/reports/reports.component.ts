@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
 
 interface Report {
   id: string;
@@ -24,7 +25,8 @@ export class ReportsComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -137,22 +139,45 @@ export class ReportsComponent implements OnInit {
     this.loading = false;
   }
 
-  private downloadReport(data: Report, filename: string): void {
-    const reportContent = {
-      reportType: data.type,
-      generatedOn: this.getFormattedDate(new Date()),
-      details: data.data
-    };
+    downloadReport(data: Report, filename: string): void {
+      const reportContent = {
+        reportType: data.type,
+        generatedOn: this.getFormattedDate(new Date()),
+        details: data.data
+      };
 
-    const blob = new Blob([JSON.stringify(reportContent, null, 2)], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${filename}_${new Date().toISOString()}.json`;
-    link.click();
-    window.URL.revokeObjectURL(url);
-  }
+      const blob = new Blob([JSON.stringify(reportContent, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${filename}_${new Date().toISOString()}.json`;
+      link.click();
+      window.URL.revokeObjectURL(url);
 
+      // Create notification for the generated report
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        const notificationData = {
+          title: 'Report Generated',
+          message: `A new ${data.type} report has been generated`,
+          userId: userId,
+          status: 'unread',
+          type: 'report'
+        };
+
+        this.http.post('http://localhost:5000/api/notifications', notificationData)
+          .subscribe({
+            next: () => {
+              this.snackBar.open('Report generated and notification sent', 'Close', { duration: 3000 });
+            },
+            error: (error) => {
+              console.error('Error creating notification:', error);
+            }
+          });
+      }
+
+      this.authService.emitReportEvent(data.type);
+    }
   getFormattedDate(date: Date): string {
     return new Date(date).toLocaleDateString();
   }

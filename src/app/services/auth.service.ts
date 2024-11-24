@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, Subject } from 'rxjs';
 import { catchError, tap, switchMap } from 'rxjs/operators';
 
 interface LoginResponse {
   userId: string;
   lastLogin: string;
   profileCompleted: boolean;
-  username: string;  // Add this line
+  username: string;
   message: string;
 }
 
@@ -24,9 +24,16 @@ interface UserProfileData {
   preferredPickupTime: string;
   email: string;
 }
+
 interface ProfileUpdateResponse {
   message: string;
   user: UserProfileData;
+}
+
+interface NotificationData {
+  date?: string;
+  time?: string;
+  reportType?: string;
 }
 
 @Injectable({
@@ -34,8 +41,19 @@ interface ProfileUpdateResponse {
 })
 export class AuthService {
   private apiUrl = 'http://localhost:5000/api';
+  
+  // Event emitters
+  public signupEvent = new Subject<void>();
+  public collectionEvent = new Subject<NotificationData>();
+  public feedbackEvent = new Subject<void>();
+  public profileEvent = new Subject<void>();
+  public reportEvent = new Subject<string>();
 
   constructor(private http: HttpClient) {}
+
+  getAuthToken(): string {
+    return localStorage.getItem('token') || '';
+  }
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = '';
@@ -91,7 +109,7 @@ export class AuthService {
           localStorage.setItem('userId', response.userId);
           localStorage.setItem('lastLogin', response.lastLogin);
           localStorage.setItem('profileCompleted', String(response.profileCompleted));
-          localStorage.setItem('username', response.username); // Add this line
+          localStorage.setItem('username', response.username);
         }),
         catchError(this.handleError)
       );
@@ -129,14 +147,18 @@ export class AuthService {
     );
   }
 
+  saveNotification(notification: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/notifications`, notification);
+  }
+
   getNotifications(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/notifications`)
-      .pipe(catchError(this.handleError));
+    return this.http.get<any[]>(`${this.apiUrl}/notifications`);
   }
 
   markNotificationAsRead(notificationId: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/notifications/${notificationId}`, { status: 'read' })
-      .pipe(catchError(this.handleError));
+    return this.http.patch(`${this.apiUrl}/notifications/${notificationId}`, {
+      status: 'read'
+    });
   }
 
   getUserProfile(): Observable<UserProfileData> {
@@ -157,13 +179,31 @@ export class AuthService {
   }
 
   getUserId(): string {
-    // Implement logic to return the user ID
-    return 'someUserId'; // Replace with actual logic
+    return 'someUserId';
   }
 
   getCurrentUserId(): string | null {
-    // Assuming you store the user ID in local storage after login
-    return localStorage.getItem('userId'); // Replace with your actual logic
+    return localStorage.getItem('userId');
   }
 
+  // Trigger notification events
+  emitSignupEvent(): void {
+    this.signupEvent.next();
+  }
+
+  emitCollectionEvent(data: NotificationData): void {
+    this.collectionEvent.next(data);
+  }
+
+  emitFeedbackEvent(): void {
+    this.feedbackEvent.next();
+  }
+
+  emitProfileEvent(): void {
+    this.profileEvent.next();
+  }
+
+  emitReportEvent(reportType: string): void {
+    this.reportEvent.next(reportType);
+  }
 }

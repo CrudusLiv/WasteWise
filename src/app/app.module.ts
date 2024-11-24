@@ -21,6 +21,7 @@ import { MaterialModule } from './material/material.module';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ProfileSetupComponent } from './Components/profile-setup/profile-setup.component';
 import { AuthGuard } from './guards/auth.guard';
+import { FeedbackResponseDialogComponent } from './Components/feedback-response-dialog/feedback-response-dialog.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -36,7 +37,8 @@ import { AuthGuard } from './guards/auth.guard';
     WasteCollectionComponent,
     RecyclingComponent,
     PickupHistoryComponent,
-    ProfileSetupComponent
+    ProfileSetupComponent,
+    FeedbackResponseDialogComponent
   ],
   imports: [
     BrowserModule,
