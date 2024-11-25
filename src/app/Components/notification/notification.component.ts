@@ -7,12 +7,10 @@ interface Notification {
   _id: string;
   title: string;
   message: string;
-  userId: {
-    username: string;
-  };
-  status: 'read' | 'unread';
+  status: string;
   createdAt: Date;
-  type: string;  // Adding the type property
+  responseText: string;
+  feedbackId?: string;
 }
 
 @Component({
@@ -21,8 +19,10 @@ interface Notification {
   styleUrls: ['./notification.component.css']
 })
 export class NotificationComponent implements OnInit {
+  private readonly apiUrl = 'http://localhost:5000/api';
   notifications: Notification[] = [];
-  loading = false;
+  unreadCount = 0;
+  selectedNotification: string | null = null;
 
   constructor(
     private authService: AuthService,
@@ -32,21 +32,31 @@ export class NotificationComponent implements OnInit {
 
   ngOnInit() {
     this.loadNotifications();
+    this.updateUnreadCount();
+  }
+
+  toggleNotificationDetails(notificationId: string): void {
+    this.selectedNotification = this.selectedNotification === notificationId ? null : notificationId;
+  }
+
+  updateUnreadCount() {
+    this.unreadCount = this.notifications.filter(n => n.status === 'unread').length;
   }
 
   loadNotifications() {
-    this.loading = true;
-    this.authService.getNotifications().subscribe({
-      next: (data) => {
-        this.notifications = data;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.snackBar.open('Error loading notifications', 'Close', { duration: 3000 });
-        this.loading = false;
-      }
-    });
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
+  
+    this.http.get<Notification[]>(`${this.apiUrl}/notifications`)
+      .subscribe({
+        next: (notifications) => {
+          console.log('Raw notification data:', notifications);
+          this.notifications = notifications;
+        },
+        error: (error) => console.error('Error:', error)
+      });
   }
+  
 
   markAsRead(notificationId: string) {
     this.authService.markNotificationAsRead(notificationId).subscribe({
@@ -54,6 +64,7 @@ export class NotificationComponent implements OnInit {
         const notification = this.notifications.find(n => n._id === notificationId);
         if (notification) {
           notification.status = 'read';
+          this.updateUnreadCount();
         }
       },
       error: (error) => {
@@ -61,7 +72,6 @@ export class NotificationComponent implements OnInit {
       }
     });
   }
-
   deleteNotification(id: string) {
     this.http.delete(`http://localhost:5000/api/notifications/${id}`).subscribe({
       next: () => {
@@ -96,5 +106,18 @@ export class NotificationComponent implements OnInit {
         this.snackBar.open('Error updating notifications', 'Close', { duration: 3000 });
       }
     });
+  }
+  
+  getNotificationIcon(type: string): string {
+    switch (type) {
+      case 'report':
+        return 'description';
+      case 'collection':
+        return 'local_shipping';
+      case 'feedback':
+        return 'feedback';
+      default:
+        return 'notifications';
+    }
   }
 }

@@ -8,7 +8,6 @@ import { ContactComponent } from './Components/contact/contact.component';
 import { DisposalComponent } from './Components/disposal/disposal.component';
 import { NavigationComponent } from './Components/navigation/navigation.component';
 import { NotificationComponent } from './Components/notification/notification.component';
-import { PickupHistoryComponent } from './Components/pickup-history/pickup-history.component';
 import { ProfileComponent } from './Components/profile/profile.component';
 import { RecyclingComponent } from './Components/recycling/recycling.component';
 import { WasteCollectionComponent } from './Components/waste-collection/waste-collection.component';
@@ -23,7 +22,6 @@ const routes: Routes = [
   { path: 'disposal', component: DisposalComponent },
   { path: 'navigation', component: NavigationComponent },
   { path: 'notification', component: NotificationComponent },
-  { path: 'pickup-history', component: PickupHistoryComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'profile-setup', component: ProfileSetupComponent },
   { path: 'recycling', component: RecyclingComponent },

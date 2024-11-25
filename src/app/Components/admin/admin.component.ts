@@ -53,16 +53,17 @@ export class AdminComponent implements OnInit {
   loading = false;
   showUserList = true;
   selectedUserId: string = '';
-  displayedUserColumns: string[] = ['username', 'email', 'role', 'lastLogin', 'status', 'actions'];
+  displayedUserColumns: string[] = ['username', 'email', 'role', 'lastLogin', 'actions'];
   selectedUser: User | null = null;
   roles: string[] = ['user', 'admin', 'moderator'];
   private readonly apiUrl = 'http://localhost:5000/api';
+  notifications: any[] = [];
 
   constructor(
     private http: HttpClient,
     private authService: AuthService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog  // Add this line
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -126,18 +127,36 @@ export class AdminComponent implements OnInit {
   
   respondToFeedback(feedbackId: string, response: string): void {
     const headers = this.getAuthHeaders();
+    console.log('Sending response:', response);
+    
     this.http.post(`${this.apiUrl}/feedback/${feedbackId}/respond`, { response }, { headers })
       .subscribe({
-        next: () => {
-          this.showSuccess('Response sent successfully');
-          this.loadFeedback();
+        next: (feedback) => {
+          console.log('Feedback updated:', feedback);
+          const notificationData = {
+            title: 'Feedback Response',
+            message: 'Your feedback has received a response',
+            userId: this.selectedUserId,
+            status: 'unread',
+            responseText: response // Store response directly
+          };
+  
+          this.http.post(`${this.apiUrl}/notifications`, notificationData, { headers })
+            .subscribe({
+              next: (notification) => {
+                console.log('Notification created:', notification);
+                this.showSuccess('Response sent successfully');
+                this.loadFeedback();
+              },
+              error: (error) => this.handleError('creating notification', error)
+            });
         },
-        error: (error: any) => this.handleError('responding to feedback', error)
+        error: (error) => this.handleError('responding to feedback', error)
       });
   }
   
   
-
+  
   updateScheduleStatus(scheduleId: string, status: 'completed' | 'dropped'): void {
     const headers = this.getAuthHeaders();
     this.http.patch(`${this.apiUrl}/waste-collection/${scheduleId}`, { status }, { headers })
@@ -267,19 +286,30 @@ export class AdminComponent implements OnInit {
     });
   }
 
-// Add this method to your AdminComponent class
-editFeedbackResponse(feedbackId: string, newResponse: string): void {
-  const headers = this.getAuthHeaders();
-  
-  this.http.put(`${this.apiUrl}/feedback/${feedbackId}/respond`, 
-    { response: newResponse }, 
-    { headers }
-  ).subscribe({
-    next: () => {
-      this.showSuccess('Response updated successfully');
-      this.loadFeedback();
-    },
-    error: (error: any) => this.handleError('updating feedback response', error)
-  });
-}
+  editFeedbackResponse(feedbackId: string, newResponse: string): void {
+    const headers = this.getAuthHeaders();
+    
+    this.http.post(`${this.apiUrl}/feedback/${feedbackId}/respond`, 
+      { response: newResponse }, 
+      { headers }
+    ).subscribe({
+      next: () => {
+        this.showSuccess('Response updated successfully');
+        this.loadFeedback();
+      },
+      error: (error: any) => this.handleError('updating feedback response', error)
+    });
+  }
+
+  deleteNotification(notificationId: string) {
+    const headers = this.getAuthHeaders();
+    this.http.delete(`${this.apiUrl}/notifications/${notificationId}`, { headers })
+      .subscribe({
+        next: () => {
+          this.showSuccess('Notification deleted successfully');
+          this.loadFeedback();
+        },
+        error: (error) => this.handleError('deleting notification', error)
+      });
+  }
 }

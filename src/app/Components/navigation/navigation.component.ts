@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSidenav } from '@angular/material/sidenav';
 import { NotificationComponent } from '../notification/notification.component';
@@ -10,13 +10,14 @@ import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',
-  styleUrls: ['./navigation.component.css'],
+  styleUrls: ['./navigation.component.css']
 })
-export class NavigationComponent {
+export class NavigationComponent implements OnInit {
   isMenuOpen = false;
   isAdmin = false;
   appTitle = 'WasteWise';
   @ViewChild('sidenav') sidenav!: MatSidenav;
+  unreadCount = 0;
 
   notifications: any[] = [
     { id: 1, message: 'New collection schedule available', type: 'info', date: new Date() },
@@ -37,6 +38,25 @@ export class NavigationComponent {
       this.closeMenu();
     });
     this.checkAdminStatus();
+    
+    // Update notification count every 5 seconds
+    setInterval(() => {
+      this.fetchUnreadNotifications();
+    }, 5000);
+  }
+
+  ngOnInit() {
+    this.fetchUnreadNotifications();
+  }
+
+  fetchUnreadNotifications() {
+    this.http.get<any[]>('http://localhost:5000/api/notifications')
+      .subscribe(notifications => {
+        const currentUnreadCount = notifications.filter(n => n.status === 'unread').length;
+        if (this.unreadCount !== currentUnreadCount) {
+          this.unreadCount = currentUnreadCount;
+        }
+      });
   }
 
   toggleMenu() {
@@ -102,5 +122,3 @@ export class NavigationComponent {
     }
   }
 }
-
-

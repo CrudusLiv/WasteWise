@@ -16,7 +16,6 @@ import { ProfileComponent } from './Components/profile/profile.component';
 import { ReportsComponent } from './Components/reports/reports.component';
 import { WasteCollectionComponent } from './Components/waste-collection/waste-collection.component';
 import { RecyclingComponent } from './Components/recycling/recycling.component';
-import { PickupHistoryComponent } from './Components/pickup-history/pickup-history.component';
 import { MaterialModule } from './material/material.module';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ProfileSetupComponent } from './Components/profile-setup/profile-setup.component';
@@ -36,7 +35,6 @@ import { FeedbackResponseDialogComponent } from './Components/feedback-response-
     ProfileComponent,
     WasteCollectionComponent,
     RecyclingComponent,
-    PickupHistoryComponent,
     ProfileSetupComponent,
     FeedbackResponseDialogComponent
   ],

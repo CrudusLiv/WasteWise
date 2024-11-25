@@ -8,7 +8,8 @@
       <div class="dashboard-card">
         <mat-icon class="feature-icon">delete</mat-icon>
         <h3>Waste Collection</h3>
-        <p>Schedule and manage waste pickups</p>
+        <p>Schedule and manage waste 
+          s</p>
         <button mat-raised-button class="btn" routerLink="/waste-collection">
           Manage Collection
         </button>
@@ -31,15 +32,42 @@
           View Reports
         </button>
       </div>
-  
-      <div class="dashboard-card">
-        <mat-icon class="feature-icon">history</mat-icon>
-        <h3>Collection History</h3>
-        <p>View past collection records</p>
-        <button mat-raised-button class="btn" routerLink="/pickup-history">
-          View History
-        </button>
-      </div>
     </div>
   </div>
-  
+      <div class="collection-previews">
+        <mat-card class="preview-card">
+          <mat-card-header>
+            <mat-card-title>Recent Collections</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="recentCollections.length > 0">
+              <div class="collection-item" *ngFor="let collection of recentCollections">
+                <h3>{{collection.wasteType}}</h3>
+                <p>{{collection.date | date}} - {{collection.area}}</p>
+                <p class="status">Status: {{collection.status}}</p>
+              </div>
+            </div>
+            <div *ngIf="recentCollections.length === 0" class="empty-message">
+              No recent collections found
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="preview-card">
+          <mat-card-header>
+            <mat-card-title>Upcoming Collections</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="upcomingCollections.length > 0">
+              <div class="collection-item" *ngFor="let collection of upcomingCollections">
+                <h3>{{collection.wasteType}}</h3>
+                <p>{{collection.date | date}} - {{collection.area}}</p>
+                <p class="status">Status: {{collection.status}}</p>
+              </div>
+            </div>
+            <div *ngIf="upcomingCollections.length === 0" class="empty-message">
+              No upcoming collections scheduled
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>

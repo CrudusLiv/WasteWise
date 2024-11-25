@@ -1,38 +1,35 @@
 <div class="notification-container">
   <div class="notification-header">
-    <h2>Notifications</h2>
+    <mat-icon class="header-icon">notifications</mat-icon>
     <div class="notification-actions">
-      <button mat-raised-button color="primary" (click)="markAllAsRead()">
+      <button mat-icon-button color="primary" (click)="markAllAsRead()" matTooltip="Mark All Read">
         <mat-icon>done_all</mat-icon>
-        Mark All Read
       </button>
-      <button mat-raised-button color="warn" (click)="deleteAllNotifications()">
+      <button mat-icon-button color="warn" (click)="deleteAllNotifications()" matTooltip="Clear All">
         <mat-icon>delete_sweep</mat-icon>
-        Clear All
       </button>
     </div>
   </div>
 
   <div class="notification-list">
     <mat-card *ngFor="let notification of notifications" 
-              [class.unread]="notification.status === 'unread'"
+              [class.expanded]="selectedNotification === notification._id"
               class="notification-card">
-      <mat-card-content>
+      <mat-card-content (click)="toggleNotificationDetails(notification._id)">
         <div class="notification-content">
           <div class="notification-icon">
-            <mat-icon [class.unread-icon]="notification.status === 'unread'">
-              {{notification.status === 'unread' ? 'mark_email_unread' : 'mark_email_read'}}
-            </mat-icon>
+            <mat-icon>{{notification.title.includes('Response') ? 'feedback' : 'notifications'}}</mat-icon>
           </div>
           <div class="notification-details">
-            <h3>{{notification.title}}</h3>
-            <p>{{notification.message}}</p>
-            <span class="notification-time">{{notification.createdAt | date:'medium'}}</span>
-          </div>
-          <div class="notification-actions">
-            <button mat-icon-button color="warn" (click)="deleteNotification(notification._id)">
-              <mat-icon>delete</mat-icon>
-            </button>
+            <h3 class="notification-title">{{notification.title}}</h3>
+            <p class="notification-message">{{notification.message}}</p>
+            
+            <div *ngIf="selectedNotification === notification._id && notification.title.includes('Response')" 
+                 class="response-details">
+              <mat-divider></mat-divider>
+              <h4>Admin Response:</h4>
+              <p class="response-text">{{notification.responseText || 'No response available'}}</p>
+            </div>
           </div>
         </div>
       </mat-card-content>

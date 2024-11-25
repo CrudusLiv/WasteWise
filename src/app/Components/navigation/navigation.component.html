@@ -5,18 +5,22 @@
   <span class="app-title">{{appTitle}}</span>
   <span class="toolbar-spacer"></span>
   <button mat-icon-button class="notification-button" (click)="openNotifications()">
-    <mat-icon>notifications</mat-icon>
+            <mat-icon 
+              role="img" 
+              matBadgeColor="warn"
+              matBadgePosition="above after"
+              matBadgeSize="small"
+              class="mat-icon notranslate mat-badge"
+              aria-hidden="false"
+              matBadge="{{unreadCount}}" 
+              [matBadgeHidden]="unreadCount === 0">
+              notifications
+            </mat-icon>
   </button>
 </mat-toolbar>
 
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav [mode]="'push'" [opened]="isMenuOpen" class="sidenav">
-    <div class="nav-header">
-      <div class="logo-container">
-        <mat-icon>eco</mat-icon>
-        <span>{{appTitle}}</span>
-      </div>
-    </div>
     
     <mat-nav-list>
       <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
@@ -35,10 +39,6 @@
       <a mat-list-item routerLink="/waste-collection" routerLinkActive="active">
         <mat-icon>local_shipping</mat-icon>
         <span>Waste Collection</span>
-      </a>
-      <a mat-list-item routerLink="/pickup-history" routerLinkActive="active">
-        <mat-icon>local_shipping</mat-icon>
-        <span>Pickup History</span>
       </a>
       <a mat-list-item routerLink="/reports" routerLinkActive="active">
         <mat-icon>assessment</mat-icon>

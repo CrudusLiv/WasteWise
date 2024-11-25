@@ -30,6 +30,7 @@ interface Notification {
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
+
 export class ProfileComponent implements OnInit {
   user: UserProfile = {
     username: '',
@@ -73,7 +74,8 @@ export class ProfileComponent implements OnInit {
         this.user = {
           ...profileData,
           username: profileData.username || localStorage.getItem('username') || '',
-          email: localStorage.getItem('userEmail') || ''
+          email: localStorage.getItem('userEmail') || '',
+          
         };
         this.loading = false;
       },

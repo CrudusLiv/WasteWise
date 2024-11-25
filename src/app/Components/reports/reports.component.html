@@ -1,28 +1,79 @@
-<div class="reports-container">
-  <mat-card>
+<div class="reports-container mat-elevation-z4">
+  <mat-card class="date-picker-card">
     <mat-card-header>
+      <mat-icon color="primary">date_range</mat-icon>
       <mat-card-title>Generate Reports</mat-card-title>
     </mat-card-header>
-    
     <mat-card-content>
-      <mat-form-field>
-        <mat-label>Date Range</mat-label>
-        <mat-date-range-input [rangePicker]="picker">
-          <input matStartDate [(ngModel)]="dateRange.start" placeholder="Start date">
-          <input matEndDate [(ngModel)]="dateRange.end" placeholder="End date">
-        </mat-date-range-input>
-        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-date-range-picker #picker></mat-date-range-picker>
-      </mat-form-field>
-
-      <div class="report-actions">
-        <button mat-raised-button color="primary" (click)="generateFeedbackReport()">
-          Generate Feedback Report
-        </button>
-        <button mat-raised-button color="accent" (click)="generateScheduleReport()">
-          Generate Schedule Report
+      <div class="date-picker-section">
+        <mat-form-field appearance="outline">
+          <mat-label>Select Date Range</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate placeholder="Start date" [(ngModel)]="dateRange.start">
+            <input matEndDate placeholder="End date" [(ngModel)]="dateRange.end">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="loadPreviews()">
+          <mat-icon>preview</mat-icon>
+          Load Previews
         </button>
       </div>
     </mat-card-content>
   </mat-card>
+
+  <div class="preview-section">
+    <mat-tab-group animationDuration="500ms">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">feedback</mat-icon>
+          Feedback Preview
+        </ng-template>
+        <div class="preview-content">
+          <mat-card *ngFor="let feedback of previewFeedback" class="preview-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>comment</mat-icon>
+              <mat-card-title>{{feedback.subject}}</mat-card-title>
+              <mat-card-subtitle>{{feedback.createdAt | date}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <p>{{feedback.message}}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+      
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">schedule</mat-icon>
+          Collections Preview
+        </ng-template>
+        <div class="preview-content">
+          <mat-card *ngFor="let collection of previewCollections" class="preview-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>delete</mat-icon>
+              <mat-card-title>{{collection.wasteType}}</mat-card-title>
+              <mat-card-subtitle>{{collection.date | date}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <p><strong>Area:</strong> {{collection.area}}</p>
+              <p><strong>Status:</strong> {{collection.status}}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <div class="action-buttons">
+    <button mat-raised-button color="primary" (click)="generateFeedbackReport()">
+      <mat-icon>picture_as_pdf</mat-icon>
+      Download Feedback Report
+    </button>
+    <button mat-raised-button color="primary" (click)="generateScheduleReport()">
+      <mat-icon>picture_as_pdf</mat-icon>
+      Download Schedule Report
+    </button>
+  </div>
 </div>

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface Report {
   id: string;
@@ -22,6 +24,8 @@ export class ReportsComponent implements OnInit {
     start: new Date(),
     end: new Date()
   };
+  previewFeedback: any[] = [];
+  previewCollections: any[] = [];
 
   constructor(
     private http: HttpClient,
@@ -33,7 +37,44 @@ export class ReportsComponent implements OnInit {
     this.loadReports();
   }
 
-  loadReports(): void {
+  loadPreviews(): void {
+    // Set start date to beginning of day (00:00:00)
+    const startDate = new Date(this.dateRange.start);
+    startDate.setHours(0, 0, 0, 0);
+    
+    // Set end date to end of day (23:59:59)
+    const endDate = new Date(this.dateRange.end);
+    endDate.setHours(23, 59, 59, 999);
+    
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
+
+    this.http.get<any[]>(`http://localhost:5000/api/feedback?userId=${userId}`)
+      .subscribe({
+        next: (feedback) => {
+          this.previewFeedback = feedback.filter(item => {
+            const itemDate = new Date(item.createdAt);
+            return itemDate >= startDate && itemDate <= endDate;
+          });
+        },
+        error: () => {
+          this.snackBar.open('Error loading feedback preview', 'Close', { duration: 3000 });
+        }
+      });
+
+    this.http.get<any[]>(`http://localhost:5000/api/waste-collection`)
+      .subscribe({
+        next: (collections) => {
+          this.previewCollections = collections.filter(item => {
+            const itemDate = new Date(item.date);
+            return itemDate >= startDate && itemDate <= endDate;
+          });
+        },
+        error: () => {
+          this.snackBar.open('Error loading collections preview', 'Close', { duration: 3000 });
+        }
+      });
+  }   loadReports(): void {
     this.loading = true;
     const userId = localStorage.getItem('userId');
     if (!userId) {
@@ -64,7 +105,8 @@ export class ReportsComponent implements OnInit {
           this.snackBar.open('Error loading feedback', 'Close', { duration: 3000 });
         }
       });
-  }
+
+    }
 
   private loadWasteCollectionData(userId: string): void {
     this.http.get<any[]>(`http://localhost:5000/api/waste-collection`)
@@ -92,67 +134,142 @@ export class ReportsComponent implements OnInit {
     if (!userId) return;
     
     this.loading = true;
-    const feedbackReport: Report = {
-      id: 'feedback_' + new Date().getTime(),
-      date: new Date(),
-      type: 'feedback_report',
-      data: {
-        feedbacks: this.reports
-          .filter((report: Report) => report.type === 'feedback')
-          .map(report => ({
-            submissionDate: this.getFormattedDate(new Date(report.date)),
-            fullName: report.data.fullName,
-            email: report.data.email,
-            subject: report.data.subject,
-            message: report.data.message
-          }))
-      }
-    };
-  
-    this.downloadReport(feedbackReport, 'feedback_report');
-    this.loading = false;
-  }
+    this.http.get<any[]>(`http://localhost:5000/api/feedback?userId=${userId}`)
+      .subscribe({
+        next: (feedback) => {
+          const filteredFeedback = feedback.filter(item => {
+            const feedbackDate = new Date(item.createdAt);
+            return feedbackDate >= this.dateRange.start && feedbackDate <= this.dateRange.end;
+          });
 
+          const feedbackReport: Report = {
+            id: 'feedback_' + new Date().getTime(),
+            date: new Date(),
+            type: 'feedback_report',
+            data: {
+              feedbacks: filteredFeedback.map(item => ({
+                submissionDate: this.getFormattedDate(new Date(item.createdAt)),
+                fullName: item.fullName,
+                email: item.email,
+                subject: item.subject,
+                message: item.message
+              })),
+              totalFeedback: filteredFeedback.length,
+              dateRange: {
+                start: this.getFormattedDate(this.dateRange.start),
+                end: this.getFormattedDate(this.dateRange.end)
+              }
+            }
+          };
+
+          this.downloadReport(feedbackReport, 'feedback_report');
+          this.loading = false;
+        },
+        error: (error) => {
+          this.snackBar.open('Error generating feedback report', 'Close', { duration: 3000 });
+          this.loading = false;
+        }
+      });
+  }
   generateScheduleReport(): void {
     const userId = localStorage.getItem('userId');
     if (!userId) return;
 
-    this.loading = true;
-    const scheduleData = this.reports
-      .filter((report: Report) => report.type === 'schedule')
-      .map(report => ({
-        date: new Date(report.date).toLocaleDateString(),
-        wasteType: report.data.wasteType,
-        area: report.data.area,
-        notes: report.data.notes || 'No notes provided',
-        status: report.data.status || 'Scheduled'
-      }));
-
-    const reportContent: Report = {
+    const reportData: Report = {
       id: 'schedule_' + new Date().getTime(),
-      type: 'Schedule Report',
+      type: 'schedule_report',
       date: new Date(),
-      data: scheduleData
+      data: {
+        schedules: this.previewCollections.map(schedule => ({
+          date: this.getFormattedDate(new Date(schedule.date)),
+          wasteType: schedule.wasteType,
+          status: schedule.status || 'Pending',
+          area: schedule.area
+        }))
+      }
     };
 
-    this.downloadReport(reportContent, 'schedule_report');
-    this.loading = false;
+    this.downloadReport(reportData, 'waste_collection_schedule');
   }
 
     downloadReport(data: Report, filename: string): void {
-      const reportContent = {
-        reportType: data.type,
-        generatedOn: this.getFormattedDate(new Date()),
-        details: data.data
-      };
+      const doc = new jsPDF();
+      const reportDate = new Date().toLocaleDateString();
+      
+      // Add header with logo
+      doc.setFontSize(20);
+      doc.setTextColor(46, 125, 50); // Green color
+      doc.text('WasteWise Report', 105, 20, { align: 'center' });
+      
+      // Add report info
+      doc.setFontSize(12);
+      doc.setTextColor(0);
+      doc.text(`Generated on: ${reportDate}`, 20, 40);
+      doc.text(`Report Type: ${data.type}`, 20, 50);
 
-      const blob = new Blob([JSON.stringify(reportContent, null, 2)], { type: 'application/json' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${filename}_${new Date().toISOString()}.json`;
-      link.click();
-      window.URL.revokeObjectURL(url);
+      if (data.type === 'feedback_report') {
+
+        interface FeedbackReport {
+          submissionDate: string;
+          subject: string;
+          message: string;
+        }
+
+        const feedbackData = data.data.feedbacks.map((fb: FeedbackReport) => [
+          fb.submissionDate,
+          fb.subject,
+          fb.message
+        ]);
+
+        autoTable(doc, {
+          head: [['Date', 'Subject', 'Message']],
+          body: feedbackData,
+          startY: 60,
+          styles: {
+            fontSize: 10,
+            cellPadding: 5
+          },
+          headStyles: {
+            fillColor: [46, 125, 50]
+          }
+        });
+      } else {
+        // Add interfaces for type safety
+        interface FeedbackItem {
+          submissionDate: string;
+          subject: string;
+          message: string;
+        }
+
+        interface ScheduleItem {
+          date: string;
+          wasteType: string;
+          status: string;
+          area: string;
+        }
+
+        // Update the mapping functions with proper typing
+        const scheduleData = data.data.schedules.map((sch: ScheduleItem) => [
+          sch.date,
+          sch.wasteType,
+          sch.status,
+          sch.area
+        ]);
+        autoTable(doc, {
+          head: [['Date', 'Waste Type', 'Status', 'Area']],
+          body: scheduleData,
+          startY: 60,
+          styles: {
+            fontSize: 10,
+            cellPadding: 5
+          },
+          headStyles: {
+            fillColor: [46, 125, 50]
+          }
+        });
+      }
+
+      doc.save(`${filename}_${reportDate}.pdf`);
 
       // Create notification for the generated report
       const userId = localStorage.getItem('userId');

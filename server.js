@@ -347,26 +347,16 @@ app.get("/api/pickup-statistics", async (req, res) => {
 });
 
 // Update notification endpoints
-app.post("/api/notifications", async (req, res) => {
+app.post('/api/notifications', async (req, res) => {
   try {
-    const { title, message, userId } = req.body;
-    
-    if (!title || !message || !userId) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    const notification = new Notification({
-      title,
-      message,
-      userId,
-      status: 'unread'
-    });
-
+    console.log('Creating notification:', req.body);
+    const notification = new Notification(req.body);
     await notification.save();
+    console.log('Saved notification:', notification);
     res.status(201).json(notification);
   } catch (error) {
     console.error('Error creating notification:', error);
-    res.status(500).json({ message: "Error creating notification" });
+    res.status(500).json({ message: 'Error creating notification' });
   }
 });
 app.get("/api/notifications", async (req, res) => {

@@ -1,10 +1,13 @@
 <div class="profile-container">
   <mat-card>
     <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
-    
+
     <div class="profile-header">
       <div class="profile-avatar" role="img" aria-label="User profile avatar">
-        <mat-icon class="avatar-icon" aria-hidden="true">account_circle</mat-icon>
+        <img *ngIf="profileImageUrl" [src]="profileImageUrl" alt="Profile Picture">
+        <mat-icon *ngIf="!profileImageUrl" class="avatar-icon" aria-hidden="true">account_circle</mat-icon>
+        <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;">
+        <button (click)="fileInput.click()">Upload Profile Picture</button>
       </div>
     </div>
 
