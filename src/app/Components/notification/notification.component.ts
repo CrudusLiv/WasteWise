@@ -30,8 +30,11 @@ interface FeedbackNotification {
 export class NotificationComponent implements OnInit {
   private readonly apiUrl = 'http://localhost:5000/api';
   notifications: Notification[] = [];
+  displayedNotifications: Notification[] = [];
   unreadCount = 0;
   selectedNotification: string | null = null;
+  currentIndex = 0;
+  readonly maxDisplayed = 3;
 
   constructor(
     private authService: AuthService,
@@ -52,6 +55,22 @@ export class NotificationComponent implements OnInit {
     this.unreadCount = this.notifications.filter(n => n.status === 'unread').length;
   }
 
+  scrollNotifications(direction: 'up' | 'down') {
+    if (direction === 'down' && this.currentIndex + this.maxDisplayed < this.notifications.length) {
+      this.currentIndex++;
+    } else if (direction === 'up' && this.currentIndex > 0) {
+      this.currentIndex--;
+    }
+    this.updateDisplayedNotifications();
+  }
+
+  updateDisplayedNotifications() {
+    this.displayedNotifications = this.notifications.slice(
+      this.currentIndex,
+      this.currentIndex + this.maxDisplayed
+    );
+  }
+
   loadNotifications() {
     const userId = localStorage.getItem('userId');
     if (!userId) return;
@@ -59,13 +78,13 @@ export class NotificationComponent implements OnInit {
     this.http.get<Notification[]>(`${this.apiUrl}/notifications`)
       .subscribe({
         next: (notifications) => {
-          console.log('Raw notification data:', notifications);
           this.notifications = notifications;
+          this.updateDisplayedNotifications();
+          this.updateUnreadCount();
         },
         error: (error) => console.error('Error:', error)
       });
   }
-  
 
   markAsRead(notificationId: string) {
     this.authService.markNotificationAsRead(notificationId).subscribe({

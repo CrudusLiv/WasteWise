@@ -97,15 +97,38 @@ button.mat-button:hover {
 }
 
 .notification-card {
-  margin-bottom: 16px;
+  margin: 8px 0;
+  transition: background-color 0.3s ease;
   border-radius: 8px;
-  transition: all 0.3s ease;
   cursor: pointer;
 }
 
-.notification-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+.notification-unread {
+  background-color: #e3f2fd;
+  border-left: 4px solid #2196f3;
+}
+
+.notification-read {
+  background-color: #ffffff;
+  border-left: 4px solid #e0e0e0;
+  opacity: 0.8;
+}
+
+.notification-status {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.status-unread {
+  background-color: #2196f3;
+}
+
+.status-read {
+  background-color: #bdbdbd;
 }
 
 .notification-content {
@@ -268,4 +291,52 @@ mat-card-actions {
 
 .expanded {
   background: #fafafa;
+}
+.notifications-scroll-container {
+  max-height: 300px;
+  overflow-y: auto;
+  position: relative;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.scroll-button {
+  position: absolute;
+  right: 10px;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.scroll-up {
+  top: 5px;
+}
+
+.scroll-down {
+  bottom: 5px;
+}
+
+.notification-list {
+  padding: 10px;
+}
+
+.notifications-scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notifications-scroll-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.notifications-scroll-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
 }

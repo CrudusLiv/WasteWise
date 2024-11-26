@@ -10,22 +10,33 @@
       </button>
     </div>
   </div>
+  <div class="notifications-scroll-container">
+    <button 
+      class="scroll-button scroll-up" 
+      (click)="scrollNotifications('up')"
+      *ngIf="currentIndex > 0">
+      <mat-icon>keyboard_arrow_up</mat-icon>
+    </button>
 
-  <div class="notification-list">
-    <mat-card *ngFor="let notification of notifications" 
-              [class.expanded]="selectedNotification === notification._id"
-              class="notification-card">
-      <mat-card-content (click)="toggleNotificationDetails(notification._id)">
-        <div class="notification-content">
-          <div class="notification-icon">
-            <mat-icon>{{notification.title.includes('Response') ? 'feedback' : 'notifications'}}</mat-icon>
-          </div>
-          <div class="notification-details">
-            <h3 class="notification-title">{{notification.title}}</h3>
-            <p class="notification-message">{{notification.message}}</p>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
+    <div class="notification-list">
+      <div *ngFor="let notification of displayedNotifications">
+        <mat-card class="notification-card" [ngClass]="notification.status === 'unread' ? 'notification-unread' : 'notification-read'">
+          <div class="notification-status" [ngClass]="notification.status === 'unread' ? 'status-unread' : 'status-read'"></div>
+          <mat-card-header>
+            <mat-icon>{{getNotificationIcon(notification._id)}}</mat-icon>
+            <mat-card-title>{{notification.title}}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>{{notification.message}}</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+    <button 
+      class="scroll-button scroll-down" 
+      (click)="scrollNotifications('down')"
+      *ngIf="currentIndex + maxDisplayed < notifications.length">
+      <mat-icon>keyboard_arrow_down</mat-icon>
+    </button>
   </div>
 </div>
