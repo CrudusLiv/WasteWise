@@ -8,6 +8,7 @@
   </mat-toolbar>
 
   <div class="admin-container">
+    <!-- User List Table -->
     <div *ngIf="showUserList">
       <h2>User Management</h2>
       <mat-table [dataSource]="users" class="mat-elevation-z8">
@@ -57,65 +58,104 @@
         </mat-row>
       </mat-table>
     </div>
-  </div>
 
-  <!-- User Details View -->
-  <div *ngIf="!showUserList && selectedUser" class="dashboard-content">
-    <div class="header-with-back">
-      <button mat-icon-button (click)="backToUsers()">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <h2>Details for {{selectedUser.username}}</h2>
-    </div>
+    <!-- User Details Section -->
+    <div *ngIf="!showUserList && selectedUser" class="dashboard-content">
+      <div class="header-with-back">
+        <button mat-icon-button (click)="backToUsers()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h2>Details for {{selectedUser.username}}</h2>
+      </div>
 
-    <!-- Update the Feedback Section -->
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title>User Feedback</mat-panel-title>
-      </mat-expansion-panel-header>
-      <div class="data-container">
-        <div class="feedback-item" *ngFor="let item of feedback">
-          <div class="item-header">{{item.subject}}</div>
-          <div class="item-content">{{item.message}}</div>
-          <div>Rating: {{item.rating}}</div>
-          <div>Date: {{item.createdAt | date}}</div>
+      <!-- User Edit Section -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>User Information</mat-panel-title>
+        </mat-expansion-panel-header>
+  
+        <form [formGroup]="userForm" (ngSubmit)="saveUserChanges()">
+          <div class="form-grid">
+            <mat-form-field>
+              <mat-label>Username</mat-label>
+              <input matInput formControlName="username">
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" type="email">
+            </mat-form-field>
+
+            <div formGroupName="profile">
+              <mat-form-field>
+                <mat-label>Full Name</mat-label>
+                <input matInput formControlName="fullName">
+              </mat-form-field>
+            </div>
+
+            <mat-form-field>
+              <mat-label>Role</mat-label>
+              <mat-select formControlName="role">
+                <mat-option *ngFor="let role of roles" [value]="role">
+                  {{role | titlecase}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit" [disabled]="!userForm.valid">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </mat-expansion-panel>
+
+      <!-- Feedback Section -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>User Feedback</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="data-container">
+          <div class="feedback-item" *ngFor="let item of feedback">
+            <div class="item-header">{{item.subject}}</div>
+            <div class="item-content">{{item.message}}</div>
+            <div>Date: {{item.createdAt | date}}</div>
+          </div>
         </div>
-      </div>
-    </mat-expansion-panel>
+      </mat-expansion-panel>
 
-    <!-- Update the Waste Collections Section -->
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title>Waste Collections</mat-panel-title>
-      </mat-expansion-panel-header>
-      <div class="data-container">
-        <div class="schedule-item" *ngFor="let schedule of schedules">
-          <div class="item-header">{{schedule.wasteType}}</div>
-          <div class="item-content">
-            <div>Date: {{schedule.date | date}}</div>
-            <div>Time: {{schedule.time}}</div>
-            <div>Status: {{schedule.status}}</div>
-            <div>Area: {{schedule.area}}</div>
-                    <button mat-raised-button 
-                color="primary" 
-                (click)="updateScheduleStatus(schedule._id, 'completed')"
-                class="action-btn">
-            <mat-icon>check_circle</mat-icon>
-            Complete
-</button>
-
-<button mat-raised-button 
-                color="warn" 
-                (click)="updateScheduleStatus(schedule._id, 'cancelled')"
-                class="action-btn">
-            <mat-icon>cancel</mat-icon>
-            Cancel
-</button>
-                  </div>
-                </div>
-      </div>
-    </mat-expansion-panel>  </div>
+      <!-- Waste Collections Section -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Waste Collections</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="data-container">
+          <div class="schedule-item" *ngFor="let schedule of schedules">
+            <div class="item-header">{{schedule.wasteType}}</div>
+            <div class="item-content">
+              <div>Date: {{schedule.date | date}}</div>
+              <div>Time: {{schedule.time}}</div>
+              <div>Status: {{schedule.status}}</div>
+              <div>Area: {{schedule.area}}</div>
+              <div class="action-buttons">
+                <button mat-raised-button color="primary" (click)="updateScheduleStatus(schedule._id, 'completed')" class="action-btn">
+                  <mat-icon>check_circle</mat-icon>Complete
+                </button>
+                <button mat-raised-button color="warn" (click)="updateScheduleStatus(schedule._id, 'cancelled')" class="action-btn">
+                  <mat-icon>cancel</mat-icon>Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </div>
+  </div>
 </div>
+        
+    <!-- Update the Waste Collections Section -->
+
 
 <mat-card *ngFor="let notification of notifications"
           [class.unread]="notification.status === 'unread'"

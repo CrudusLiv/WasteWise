@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { HttpClient } from '@angular/common/http';
 
 enum ResidenceType {
   HOUSE = 'House',
@@ -37,8 +38,10 @@ interface ProfileData {
   styleUrls: ['./profile-setup.component.css']
 })
 export class ProfileSetupComponent implements OnInit {
+  private readonly apiUrl = 'http://localhost:5000/api';
   profileForm: FormGroup;
   loading = false;
+  isNewUser: boolean = false;
 
   states = [
     'Johor', 'Kedah', 'Kelantan', 'Melaka', 'Negeri Sembilan',
@@ -54,14 +57,18 @@ export class ProfileSetupComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private http: HttpClient
   ) {
     this.profileForm = this.fb.group({
       fullName: ['', Validators.required],
       username: ['', [
         Validators.required,
         Validators.minLength(3),
-        Validators.pattern('^[a-zA-Z0-9_]*$')
+        Validators.pattern('^[a-zA-Z0-9_]*'),
+
+
+
       ]],
       phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,11}$')]],
       address: ['', Validators.required],
@@ -74,10 +81,30 @@ export class ProfileSetupComponent implements OnInit {
     });
   }
 
+  private loadExistingProfile(): void {
+    const userId = localStorage.getItem('userId');
+    this.http.get<ProfileData>(`${this.apiUrl}/user/${userId}`).subscribe({
+      next: (profile: ProfileData) => {
+        this.profileForm.patchValue(profile);
+      },
+      error: (error: any) => {
+        this.snackBar.open('Error loading profile data', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
   ngOnInit(): void {
+    const navigation = this.router.getCurrentNavigation();
+    this.isNewUser = navigation?.extras?.state?.['isNewUser'] || false;
+    
     const userId = localStorage.getItem('userId');
     if (!userId) {
       this.router.navigate(['/access']);
+      return;
+    }
+
+    if (!this.isNewUser) {
+      this.loadExistingProfile();
     }
   }
 
@@ -90,39 +117,26 @@ export class ProfileSetupComponent implements OnInit {
         userId
       };
 
-      console.log('Submitting profile data:', profileData);
-
       this.authService.updateUserProfile(profileData).subscribe({
         next: (response) => {
-          console.log('Profile update successful:', response);
-          this.snackBar.open('Profile setup completed successfully!', 'Close', {
+          this.snackBar.open(this.isNewUser ? 'Profile setup completed!' : 'Profile updated successfully!', 'Close', {
             duration: 3000
           });
           this.router.navigate(['/dashboard']);
         },
-        error: (error: any) => {
-          console.error('Profile update failed:', error);
+        error: (error) => {
           let errorMessage = 'Error updating profile. ';
-          
           if (error.error?.errors) {
-            // Handle mongoose validation errors
-            const errors = error.error.errors;
-            Object.keys(errors).forEach(key => {
-              errorMessage += `${errors[key].message} `;
+            Object.keys(error.error.errors).forEach(key => {
+              errorMessage += `${error.error.errors[key].message} `;
             });
           }
-          
           this.snackBar.open(errorMessage, 'Close', {
             duration: 3000
           });
           this.loading = false;
         }
       });
-    } else {
-      console.log('Form invalid:', this.profileForm.errors);
-      this.snackBar.open('Please fill in all required fields correctly.', 'Close', {
-        duration: 3000
-      });
     }
   }
-} 
+}

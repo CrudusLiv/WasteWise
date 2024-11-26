@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,23 +9,25 @@ interface User {
   _id: string;
   username: string;
   email: string;
+  fullName: string;  // Added as top-level property
   profile: {
     fullName: string;
     phoneNumber: string;
     address: string;
+    city: string;
+    state: string;
+    postalCode: string;
   };
-  isActive: boolean;
   role: string;
   lastLogin: Date;
+  isAdmin: boolean;
 }
-
 interface Feedback {
   _id: string;
   userId: string;
   message: string;
-  rating: number;
   createdAt: Date;
-  subject: string;  // Added subject property
+  subject: string;
   response?: {
     response: string;
   };
@@ -37,7 +40,7 @@ interface Schedule {
   time: string;
   status: string;
   wasteType: string;
-  area: string;  // Added area property
+  area: string;
 }
 
 @Component({
@@ -54,16 +57,37 @@ export class AdminComponent implements OnInit {
   selectedUserId: string = '';
   displayedUserColumns: string[] = ['username', 'email', 'role', 'lastLogin', 'actions'];
   selectedUser: User | null = null;
-  roles: string[] = ['user', 'admin', 'moderator'];
+  roles: string[] = ['user', 'admin'];
   private readonly apiUrl = 'http://localhost:5000/api';
   notifications: any[] = [];
+  userForm: FormGroup = new FormGroup({});  // Initialize here
 
   constructor(
     private http: HttpClient,
     private authService: AuthService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
-  ) {}
+    private dialog: MatDialog,
+    private fb: FormBuilder
+  ) {
+    this.initializeForm();
+  }
+
+
+  private initializeForm() {
+    this.userForm = this.fb.group({
+      username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      profile: this.fb.group({
+        fullName: ['', Validators.required],
+        phoneNumber: [''],
+        address: [''],
+        city: [''],
+        state: [''],
+        postalCode: ['']
+      }),
+      role: ['user', Validators.required]
+    });
+  }
 
   ngOnInit() {
     this.loadAllData();
@@ -137,7 +161,7 @@ export class AdminComponent implements OnInit {
             message: 'Your feedback has received a response',
             userId: this.selectedUserId,
             status: 'unread',
-            responseText: response // Store response directly
+            responseText: response
           };
   
           this.http.post(`${this.apiUrl}/notifications`, notificationData, { headers })
@@ -193,13 +217,29 @@ export class AdminComponent implements OnInit {
       });
   }
 
+
   onUserSelect(user: User) {
     this.selectedUser = user;
     this.selectedUserId = user._id;
     this.showUserList = false;
+    
+    // Auto-fill all form fields including fullName
+    this.userForm.patchValue({
+      username: user.username,
+      email: user.email,
+      role: user.isAdmin ? 'admin' : 'user',
+      profile: {
+        fullName: user.fullName, // Direct access to fullName
+        phoneNumber: user.profile?.phoneNumber || '',
+        address: user.profile?.address || '',
+        city: user.profile?.city || '',
+        state: user.profile?.state || '',
+        postalCode: user.profile?.postalCode || ''
+      }
+    });
+    
     this.loadUserData();
   }
-
   loadUserData() {
     this.loading = true;
     this.loadFeedback();
@@ -207,9 +247,41 @@ export class AdminComponent implements OnInit {
     this.loading = false;
   }
 
+  saveUserChanges() {
+    if (this.userForm.valid && this.selectedUser) {
+      const formValues = this.userForm.getRawValue(); // Get all form values including disabled fields
+      const updatedUser = {
+        username: formValues.username,
+        email: formValues.email,
+        isAdmin: formValues.role === 'admin',
+        fullName: formValues.profile.fullName, // Add fullName directly
+        profile: {
+          fullName: formValues.profile.fullName,
+          phoneNumber: formValues.profile.phoneNumber,
+          address: formValues.profile.address,
+          city: formValues.profile.city,
+          state: formValues.profile.state,
+          postalCode: formValues.profile.postalCode
+        }
+      };
+      
+      const headers = this.getAuthHeaders();
+      this.http.patch(`${this.apiUrl}/users/${this.selectedUser._id}`, updatedUser, { headers })
+        .subscribe({
+          next: () => {
+            this.loadUsers();
+            this.showSuccess('User information updated successfully');
+            this.backToUsers();
+          },
+          error: (error) => this.handleError('updating user information', error)
+        });
+    }
+  }
+
   backToUsers() {
     this.showUserList = true;
     this.selectedUser = null;
+    this.userForm.reset();
     this.feedback = [];
     this.schedules = [];
   }
@@ -221,26 +293,6 @@ export class AdminComponent implements OnInit {
   private handleError(action: string, error: any) {
     console.error(`Error ${action}:`, error);
     this.snackBar.open(`Error ${action}. Please try again.`, 'Close', { duration: 3000 });
-  }
-
-  editUser(user: User) {
-    this.selectedUser = {...user};
-  }
-
-  saveUserChanges(user: User) {
-    const headers = new HttpHeaders().set(
-      'Authorization', 'Bearer ' + this.authService.getAuthToken()
-    );
-
-    this.http.put(`${this.apiUrl}/users/${user._id}`, user, { headers })
-      .subscribe({
-        next: () => {
-          this.loadUsers();
-          this.selectedUser = null;
-          this.showSuccess('User updated successfully');
-        },
-        error: (error) => this.handleError('updating user', error)
-      });
   }
 
   deleteUser(userId: string) {

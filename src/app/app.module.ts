@@ -39,10 +39,10 @@ import { AuthGuard } from './guards/auth.guard';
   imports: [
     BrowserModule,
     ReactiveFormsModule,
+    FormsModule,
     AppRoutingModule,
     MaterialModule,
-    MatSnackBarModule,
-    FormsModule
+    MatSnackBarModule
   ],
   providers: [
     AuthGuard,

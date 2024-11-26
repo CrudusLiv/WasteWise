@@ -413,6 +413,32 @@ const userSchema = new mongoose.Schema({
   lastLogin: { type: Date }
 });
 
+// Add this route to handle user role updates
+app.patch("/api/users/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const updateData = req.body;
+    
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "User updated successfully",
+      user: updatedUser
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Error updating user", error: error.message });
+  }
+});
+
 // Update profile route
 app.put("/api/user/:id/profile", async (req, res) => {
   try {

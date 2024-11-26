@@ -67,11 +67,10 @@ export class AccessComponent implements OnInit {
           
           this.authService.login(loginData).subscribe({
             next: (loginResponse) => {
-              this.authService.emitSignupEvent(); // Add this line
-              this.snackBar.open('Registration successful! Please complete your profile.', 'Close', { 
-                duration: 3000 
+              this.authService.emitSignupEvent();
+              this.router.navigate(['/profile-setup'], { 
+                state: { isNewUser: true }
               });
-              this.router.navigate(['/profile-setup']);
             },
             error: (error) => {
               this.snackBar.open('Login failed after signup', 'Close', { 

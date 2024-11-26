@@ -32,6 +32,7 @@ interface Notification {
 })
 
 export class ProfileComponent implements OnInit {
+  private readonly apiUrl = 'http://localhost:5000/api';
   user: UserProfile = {
     username: '',
     fullName: '',
@@ -66,27 +67,37 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.loadUserProfile();
   }
-
   loadUserProfile(): void {
     this.loading = true;
-    this.authService.getUserProfile().subscribe({
-      next: (profileData) => {
+    const userId = localStorage.getItem('userId');
+    
+    console.log('Fetching profile for userId:', userId);
+    
+    this.http.get<UserProfile>(`${this.apiUrl}/user/${userId}`).subscribe({
+      next: (userData) => {
+        console.log('Received user data:', userData);
         this.user = {
-          ...profileData,
-          username: profileData.username || localStorage.getItem('username') || '',
-          email: localStorage.getItem('userEmail') || '',
-          
+          username: userData.username || '',
+          fullName: userData.fullName || '',
+          email: userData.email || '',
+          phoneNumber: userData.phoneNumber || '',
+          address: userData.address || '',
+          city: userData.city || '',
+          state: userData.state || '',
+          postalCode: userData.postalCode || '',
+          residenceType: userData.residenceType || '',
+          numberOfResidents: userData.numberOfResidents || 0,
+          preferredPickupTime: userData.preferredPickupTime || ''
         };
         this.loading = false;
       },
       error: (error) => {
+        console.error('Error loading profile:', error);
         this.snackBar.open('Error loading profile', 'Close', { duration: 3000 });
         this.loading = false;
       }
     });
-  }
-
-  openNotificationsDialog(): void {
+  }    openNotificationsDialog(): void {
     const dialogRef = this.dialog.open(NotificationComponent, {
       width: '400px',
       data: { notifications: this.notifications },

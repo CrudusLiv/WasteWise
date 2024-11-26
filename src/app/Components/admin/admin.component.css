@@ -224,3 +224,75 @@ mat-toolbar {
 .action-btn mat-icon {
   margin-right: 4px;
 }
+  .edit-form-container {
+    padding: 24px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+
+  .mat-form-field {
+    width: 100%;
+  }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+mat-expansion-panel {
+  margin: 16px 0;
+  border-radius: 8px;
+}
+
+.data-container {
+  padding: 16px;
+}
+
+.feedback-item, .schedule-item {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.item-header {
+  font-weight: 500;
+  font-size: 1.1em;
+  margin-bottom: 8px;
+  color: #2E7D32;
+}
+
+.item-content {
+  margin: 8px 0;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
