@@ -135,4 +135,13 @@
   color: #666;
   margin: 0;
 }
+  .form-field {
+    &.mat-form-field-appearance-outline input[readonly] ~ .mat-form-field-outline {
+      background-color: rgba(76, 175, 80, 0.1);
+    }
+  }
 
+  /* Style for the outline border */
+  .form-field.mat-form-field-appearance-outline.mat-focused input[readonly] ~ .mat-form-field-outline {
+    color: #4CAF50;
+  }

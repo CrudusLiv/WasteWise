@@ -13,6 +13,15 @@ interface Notification {
   feedbackId?: string;
 }
 
+interface FeedbackNotification {
+  title: string;
+  message: string;
+  status: string;
+  feedbackId?: string;
+  adminResponse?: string;
+}
+
+
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
@@ -119,5 +128,18 @@ export class NotificationComponent implements OnInit {
       default:
         return 'notifications';
     }
+  }
+
+  displayFeedbackNotification(notification: FeedbackNotification) {
+    const displayMessage = notification.adminResponse 
+      ? `Admin Response: ${notification.adminResponse}`
+      : 'Your feedback has been received and is being reviewed by our team.';
+
+    return {
+      title: 'Feedback Update',
+      message: displayMessage,
+      status: 'unread',
+      type: 'feedback'
+    };
   }
 }

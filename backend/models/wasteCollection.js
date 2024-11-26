@@ -18,6 +18,11 @@ const wasteCollectionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: String,
+    enum: ['pending', 'completed', 'cancelled'],
+    default: 'pending'
+  },
   notes: {
     type: String,
     default: '',
@@ -27,5 +32,4 @@ const wasteCollectionSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
-
 module.exports = mongoose.model("WasteCollection", wasteCollectionSchema);

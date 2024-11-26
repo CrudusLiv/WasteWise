@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -9,7 +9,7 @@ import { NotificationService } from '../../services/notification.service';
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.css']
 })
-export class ContactComponent {
+export class ContactComponent implements OnInit {
   fullName: string = '';
   email: string = '';
   subject: string = '';
@@ -23,6 +23,19 @@ export class ContactComponent {
     private notificationService: NotificationService
   ) {
     this.userId = this.authService.getUserId();
+  }
+
+  ngOnInit() {
+    this.loadUserDetails();
+  }
+
+  loadUserDetails() {
+    this.authService.getUserProfile().subscribe({
+      next: (profile) => {
+        this.fullName = profile.fullName;
+        this.email = profile.email;
+      }
+    });
   }
 
   submitFeedback(): void {

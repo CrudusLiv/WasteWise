@@ -195,3 +195,32 @@ mat-toolbar {
   border-radius: 25px !important;
   overflow: hidden;
 }
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.status-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mat-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+  margin-right: 4px;
+}
+
+.action-btn {
+  margin: 0 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.action-btn mat-icon {
+  margin-right: 4px;
+}

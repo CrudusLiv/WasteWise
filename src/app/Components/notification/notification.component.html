@@ -23,13 +23,6 @@
           <div class="notification-details">
             <h3 class="notification-title">{{notification.title}}</h3>
             <p class="notification-message">{{notification.message}}</p>
-            
-            <div *ngIf="selectedNotification === notification._id && notification.title.includes('Response')" 
-                 class="response-details">
-              <mat-divider></mat-divider>
-              <h4>Admin Response:</h4>
-              <p class="response-text">{{notification.responseText || 'No response available'}}</p>
-            </div>
           </div>
         </div>
       </mat-card-content>

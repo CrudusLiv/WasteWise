@@ -79,10 +79,6 @@
           <div class="item-content">{{item.message}}</div>
           <div>Rating: {{item.rating}}</div>
           <div>Date: {{item.createdAt | date}}</div>
-          <!-- Add this button in your feedback item -->
-          <button mat-raised-button color="primary" (click)="openResponseDialog(item)">
-            {{item.response ? 'Edit Response' : 'Respond'}}
-          </button>
         </div>
       </div>
     </mat-expansion-panel>
@@ -100,8 +96,23 @@
             <div>Time: {{schedule.time}}</div>
             <div>Status: {{schedule.status}}</div>
             <div>Area: {{schedule.area}}</div>
-          </div>
-        </div>
+                    <button mat-raised-button 
+                color="primary" 
+                (click)="updateScheduleStatus(schedule._id, 'completed')"
+                class="action-btn">
+            <mat-icon>check_circle</mat-icon>
+            Complete
+</button>
+
+<button mat-raised-button 
+                color="warn" 
+                (click)="updateScheduleStatus(schedule._id, 'cancelled')"
+                class="action-btn">
+            <mat-icon>cancel</mat-icon>
+            Cancel
+</button>
+                  </div>
+                </div>
       </div>
     </mat-expansion-panel>  </div>
 </div>

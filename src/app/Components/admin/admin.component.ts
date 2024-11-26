@@ -3,7 +3,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { FeedbackResponseDialogComponent } from '../feedback-response-dialog/feedback-response-dialog.component';
 
 interface User {
   _id: string;
@@ -155,20 +154,19 @@ export class AdminComponent implements OnInit {
       });
   }
   
-  
-  
-  updateScheduleStatus(scheduleId: string, status: 'completed' | 'dropped'): void {
+  updateScheduleStatus(scheduleId: string, status: 'completed' | 'cancelled'): void {
     const headers = this.getAuthHeaders();
-    this.http.patch(`${this.apiUrl}/waste-collection/${scheduleId}`, { status }, { headers })
+  
+    this.http.patch<Schedule>(`${this.apiUrl}/waste-collection/${scheduleId}`, { status }, { headers })
       .subscribe({
-        next: () => {
-          this.showSuccess(`Schedule marked as ${status}`);
+        next: (updatedSchedule) => {
+          this.showSuccess(`Collection marked as ${status}`);
           this.loadSchedules();
         },
-        error: (error: any) => this.handleError('updating schedule status', error)
+        error: (error) => this.handleError('updating collection status', error)
       });
   }
-
+  
   deleteSchedule(scheduleId: string): void {
     const headers = this.getAuthHeaders();
     this.http.delete(`${this.apiUrl}/waste-collection/${scheduleId}`, { headers })
@@ -264,41 +262,6 @@ export class AdminComponent implements OnInit {
     return new HttpHeaders().set(
       'Authorization', 'Bearer ' + this.authService.getAuthToken()
     );
-  }
-
-  openResponseDialog(feedback: Feedback): void {
-    const dialogRef = this.dialog.open(FeedbackResponseDialogComponent, {
-      width: '500px',
-      data: {
-        feedback,
-        existingResponse: feedback.response?.response || ''
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((response: string) => {
-      if (response) {
-        if (feedback.response) {
-          this.editFeedbackResponse(feedback._id, response);
-        } else {
-          this.respondToFeedback(feedback._id, response);
-        }
-      }
-    });
-  }
-
-  editFeedbackResponse(feedbackId: string, newResponse: string): void {
-    const headers = this.getAuthHeaders();
-    
-    this.http.post(`${this.apiUrl}/feedback/${feedbackId}/respond`, 
-      { response: newResponse }, 
-      { headers }
-    ).subscribe({
-      next: () => {
-        this.showSuccess('Response updated successfully');
-        this.loadFeedback();
-      },
-      error: (error: any) => this.handleError('updating feedback response', error)
-    });
   }
 
   deleteNotification(notificationId: string) {

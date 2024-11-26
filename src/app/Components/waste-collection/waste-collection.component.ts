@@ -78,6 +78,16 @@ export class WasteCollectionComponent implements OnInit {
         this.http.post('http://localhost:5000/api/waste-collection/schedule', collectionData)
           .subscribe({
             next: (response) => {
+              // Add notification after successful scheduling
+              const notificationData = {
+                userId: userId,
+                title: 'Collection Scheduled',
+                message: `Collection scheduled for ${new Date(collectionData.date).toLocaleDateString()}`,
+                status: 'unread'
+              };
+
+              this.http.post('http://localhost:5000/api/notifications', notificationData).subscribe();
+              
               this.snackBar.open('Collection scheduled successfully', 'Close', { duration: 3000 });
               this.authService.emitCollectionEvent({
                 date: this.collectionForm.value.date,
@@ -91,5 +101,4 @@ export class WasteCollectionComponent implements OnInit {
             }
           });
       }
-    }
-  }
+    }  }
