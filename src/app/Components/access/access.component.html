@@ -35,11 +35,12 @@
                             </mat-error>
                         </mat-form-field>
 
-                        <button mat-raised-button color="primary" type="submit" 
-                                [disabled]="!loginForm.valid" class="submit-button">
+                        <!-- For Sign In button -->
+                        <button mat-raised-button color="primary" type="submit" class="submit-button">
                             <mat-icon>login</mat-icon>
                             <span>Sign In</span>
                         </button>
+
                     </form>
                 </mat-tab>
 
@@ -51,8 +52,8 @@
                         </div>
 
                         <mat-form-field appearance="outline" class="form-field">
-                            <mat-label>Full Name</mat-label>
-                            <input matInput formControlName="name" placeholder="Enter your full name">
+                            <mat-label>Username</mat-label>
+                            <input matInput formControlName="name" placeholder="Enter your username">
                             <mat-icon matSuffix class="field-icon">person</mat-icon>
                             <mat-error *ngIf="signupForm.get('name')?.invalid">
                                 {{getErrorMessage('name', 'signup')}}
@@ -97,15 +98,8 @@
                             </mat-form-field>
                         </div>
 
-                        <div class="terms-container">
-                            <mat-checkbox formControlName="terms" color="primary">
-                                I agree to the <a href="#" class="terms-link">Terms of Service</a> 
-                                and <a href="#" class="terms-link">Privacy Policy</a>
-                            </mat-checkbox>
-                        </div>
-
-                        <button mat-raised-button color="primary" type="submit" 
-                                [disabled]="!signupForm.valid" class="submit-button">
+                        <!-- For Sign Up button -->
+                        <button mat-raised-button color="primary" type="submit" class="submit-button">
                             <mat-icon>how_to_reg</mat-icon>
                             <span>Create Account</span>
                         </button>

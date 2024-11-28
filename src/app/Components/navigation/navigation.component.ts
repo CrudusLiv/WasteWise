@@ -13,6 +13,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./navigation.component.css']
 })
 export class NavigationComponent implements OnInit {
+  private readonly apiUrl = 'http://localhost:5000/api'; 
   isMenuOpen = false;
   isAdmin = false;
   appTitle = 'WasteWise';
@@ -111,12 +112,14 @@ export class NavigationComponent implements OnInit {
   private checkAdminStatus() {
     const userId = localStorage.getItem('userId');
     if (userId) {
-      this.http.get<any>(`http://localhost:5000/api/user/${userId}`).subscribe({
+      this.http.get<any>(`${this.apiUrl}/user/${userId}`).subscribe({
         next: (user) => {
-          this.isAdmin = user.isAdmin;
+          this.isAdmin = user.isAdmin || false;
         },
         error: () => {
           this.isAdmin = false;
+          localStorage.clear(); // Clear invalid session data
+          this.router.navigate(['/access']); // Redirect to login
         }
       });
     }

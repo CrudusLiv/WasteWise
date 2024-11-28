@@ -30,11 +30,9 @@ export class AccessComponent implements OnInit {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
-      terms: [false, Validators.requiredTrue]
+      confirmPassword: ['', [Validators.required, Validators.minLength(6)]]
     }, { validator: this.passwordMatchValidator });
   }
-
   ngOnInit(): void {}
 
   passwordMatchValidator(g: FormGroup) {
