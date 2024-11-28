@@ -12,21 +12,29 @@ import { ProfileComponent } from './Components/profile/profile.component';
 import { RecyclingComponent } from './Components/recycling/recycling.component';
 import { WasteCollectionComponent } from './Components/waste-collection/waste-collection.component';
 import { ProfileSetupComponent } from './Components/profile-setup/profile-setup.component';
+import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'access', component: AccessComponent },
-  { path: 'admin', component: AdminComponent },
-  { path: 'contact', component: ContactComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'disposal', component: DisposalComponent },
-  { path: 'navigation', component: NavigationComponent },
-  { path: 'notification', component: NotificationComponent },
-  { path: 'profile', component: ProfileComponent },
-  { path: 'profile-setup', component: ProfileSetupComponent },
-  { path: 'recycling', component: RecyclingComponent },
-  { path: 'reports', component: ReportsComponent },
-  { path: 'waste-collection', component: WasteCollectionComponent },
+  { 
+    path: '', 
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'profile', component: ProfileComponent },
+      { path: 'profile-setup', component: ProfileSetupComponent },
+      { path: 'waste-collection', component: WasteCollectionComponent },
+      { path: 'reports', component: ReportsComponent },
+      { path: 'contact', component: ContactComponent },
+      { path: 'admin', component: AdminComponent },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'recycling', component: RecyclingComponent },
+      { path: 'disposal', component: DisposalComponent },
+      { path: 'navigation', component: NavigationComponent },
+      { path: 'notification', component: NotificationComponent }
+    ]
+  },
+  { path: '**', redirectTo: 'access' }
 ];
 
 @NgModule({
