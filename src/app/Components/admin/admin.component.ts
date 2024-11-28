@@ -177,11 +177,11 @@ export class AdminComponent implements OnInit {
         error: (error) => this.handleError('responding to feedback', error)
       });
   }
-  
   updateScheduleStatus(scheduleId: string, status: 'completed' | 'cancelled'): void {
     const headers = this.getAuthHeaders();
-  
-    this.http.patch<Schedule>(`${this.apiUrl}/waste-collection/${scheduleId}`, { status }, { headers })
+
+    // Update to match backend route
+    this.http.patch<Schedule>(`${this.apiUrl}/waste-collection/${scheduleId}/status`, { status }, { headers })
       .subscribe({
         next: (updatedSchedule) => {
           this.showSuccess(`Collection marked as ${status}`);

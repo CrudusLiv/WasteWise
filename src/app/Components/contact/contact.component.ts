@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NotificationService } from '../../services/notification.service';
@@ -39,6 +39,18 @@ export class ContactComponent implements OnInit {
   }
 
   submitFeedback(): void {
+    // Validate required fields and message length
+    if (!this.fullName || !this.email || !this.subject || !this.message) {
+      this.snackBar.open('All fields are required', 'Close', { duration: 3000 });
+      return;
+    }
+
+    // Check for minimum character count (30 letters)
+    if (this.message.trim().length < 30) {
+      this.snackBar.open('Message must be at least 30 characters long', 'Close', { duration: 3000 });
+      return;
+    }
+
     const userId = localStorage.getItem('userId');
     if (!userId) {
       this.snackBar.open('Please log in to submit feedback', 'Close', { duration: 3000 });
@@ -46,7 +58,7 @@ export class ContactComponent implements OnInit {
     }
 
     const feedbackData = {
-      userId,
+      userId: userId,  // Using the retrieved userId
       fullName: this.fullName,
       email: this.email,
       subject: this.subject,
@@ -55,7 +67,6 @@ export class ContactComponent implements OnInit {
 
     this.http.post('http://localhost:5000/api/feedback', feedbackData).subscribe({
       next: () => {
-        // Create notification with required fields matching the schema
         const notificationData = {
           title: 'New Feedback Received',
           message: `${this.subject} - ${this.message.substring(0, 100)}`,
@@ -78,7 +89,9 @@ export class ContactComponent implements OnInit {
         this.snackBar.open('Error submitting feedback', 'Close', { duration: 3000 });
       }
     });
-  }  clearForm(): void {
+  }
+
+  clearForm(): void {
     this.fullName = '';
     this.email = '';
     this.subject = '';
