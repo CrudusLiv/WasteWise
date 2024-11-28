@@ -58,3 +58,26 @@ router.post('/schedule', async (req, res) => {
   }
 });
 module.exports = router;
+
+// Add this new route to handle status updates
+router.patch("/:id/status", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    const updatedCollection = await WasteCollection.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedCollection) {
+      return res.status(404).json({ message: "Collection not found" });
+    }
+
+    res.status(200).json(updatedCollection);
+  } catch (error) {
+    console.error("Error updating collection status:", error);
+    res.status(500).json({ message: "Error updating collection status", error: error.message });
+  }
+});
