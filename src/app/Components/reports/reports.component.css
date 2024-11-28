@@ -7,13 +7,15 @@
 }
 
 .date-picker-card {
-  margin-bottom: 24px;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  margin-bottom: 40px;
+  border: 2px solid rgba(46, 125, 50, 0.1);
 }
 
 .date-picker-section {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   align-items: center;
   flex-wrap: wrap;
 }
@@ -85,7 +87,11 @@ button[mat-raised-button]:hover {
 }
 
 mat-card-title {
-  color: #2E7D32;
+  font-size: clamp(20px, 2.5vw, 24px);
+  font-weight: 600;
+  color: #1B5E20;
+  align-items: center;
+  margin-right: 10px;
 }
 
 mat-card-subtitle {
