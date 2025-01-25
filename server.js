@@ -42,7 +42,7 @@ app.use("/uploads", express.static("uploads"));
 
 // Connect to MongoDB
 mongoose
-  .connect("mongodb+srv://CrudusLiv:pNqd4eHjHkWkMNND@cluster0.n2yin.mongodb.net/WasteWise?retryWrites=true&w=majority&appName=Cluster0")
+  .connect("")
   .then(() => {
     console.log("Connected to WasteWise database");
   })
